@@ -223,3 +223,48 @@ Checklist berikut merangkum kewajiban tugas. Semua kotak masih kosong karena REA
 | 30 | Variabel eksperimen berdasarkan digit terakhir NRP. |
 | 31 | Analisis kegagalan berbasis bukti. |
 | 32 | Bukti proses, penggunaan AI, dan durasi pengerjaan. |
+
+## 5. Notebook Kaggle
+
+Seluruh alur implementasi berada di [01_instance_segmentation_kaggle.ipynb](01_instance_segmentation_kaggle.ipynb): dataset preparation, training, eksperimen NRP, evaluation, dan analisis. Setiap code cell didahului Markdown bernomor hierarkis, misalnya `1.1`, dengan penjelasan formal dan istilah teknis yang dipertahankan. Model yang disiapkan adalah **YOLO11n-seg**, **Mask R-CNN ResNet-50 FPN**, dan **RF-DETR Seg Nano**.
+
+**Fokus pengerjaan sekarang adalah dataset Roboflow dan perbandingan ketiga model pada semua kelas. Foto HP belum diambil.** Pengambilan foto, anotasi mandiri, dan analisis domain shift dikerjakan pada tahap berikutnya. Biarkan `ENABLE_PERSONAL = False`; tahap saat ini menggunakan 397 gambar train, 166 gambar validasi, dan 359 gambar test asli.
+
+### 5.1. Menjalankan notebook
+
+1. Upload isi folder `dataset/` sebagai Kaggle Dataset, pertahankan direktori `train`, `valid`, dan `test`, lalu tambahkan sebagai Input notebook.
+2. Upload file notebook dan aktifkan Internet untuk instalasi paket serta pengunduhan pretrained weights.
+   Path dataset yang sudah disetel sesuai Input Kaggle: `RAW_DATASET = "/kaggle/input/datasets/mrmfrhann234/dataset-panoptic"`. Folder ini langsung berisi `train`, `valid`, dan `test`. Jika nama atau lokasi Input berubah, sesuaikan nilai tersebut; kosongkan untuk memakai pencarian otomatis.
+3. Konfigurasi default sudah siap untuk training: `MODE = "train"`, `MODEL = "all"`, `SCENARIO = "all_classes"`, `EPOCHS = 30`, `SMOKE_TEST = False`, `FINAL_TEST = True`, dan `ENABLE_PERSONAL = False`.
+4. Aktifkan GPU, lalu jalankan **Run All**. Dataset audit dan orientation correction dilakukan sebelum sequence training. Gunakan `MODE = "prepare"` bila hanya memerlukan audit; gunakan `SMOKE_TEST = True` untuk sequence dengan subset kecil dan satu epoch.
+5. Runner menjalankan **YOLO11 → Mask R-CNN → RF-DETR** secara berurutan. Setiap model menggunakan subprocess terpisah agar CUDA context dilepas ketika worker selesai. Dependencies tambahan diinstal pada virtual environment per model dengan akses ke paket bawaan Kaggle.
+6. Best checkpoint dipilih dari validation metrics. Setelah training, worker mengekspor validation predictions dan menjalankan test evaluation pada dataset asli. Foto HP dan daftar hard3 tidak diperlukan untuk tahap ini.
+7. Notebook menggabungkan metrics dari seluruh worker yang berhasil. Status sequence tersedia pada `/kaggle/working/cpmk3/sequence/all_classes/run01/sequence_status.json` dan console log masing-masing model pada direktori artifact.
+
+`CONTINUE_ON_ERROR = True` membuat ordinary error pada satu model dicatat tanpa membatalkan model berikutnya. KeyboardInterrupt menghentikan seluruh sequence. Jika semua worker gagal, notebook menampilkan error setelah ketiganya dicoba. `SKIP_COMPLETED = True` melewati model yang output dan configuration signature-nya sesuai. `AUTO_RESUME = True` menggunakan checkpoint optimizer yang tersedia; jika training sudah selesai dan evaluation gagal, worker menjalankan inference ulang.
+
+Untuk melanjutkan sesi sebelumnya, tambahkan output atau recovery archive yang sudah diekstrak sebagai Input. Runner memulihkan direktori artifact yang memiliki signature sesuai ke direktori kerja. Jika terdapat beberapa backup untuk run yang sama, batasi `PREVIOUS_RESULTS` ke satu sumber yang dipilih. Parameter atau source code yang berubah memerlukan `RUN_LABEL` baru. Gunakan `MODEL = "yolo11"`, `"maskrcnn"`, atau `"rfdetr"` apabila hanya satu model yang perlu dijalankan.
+
+Tahap berikutnya: gunakan `MODE = "select_classes"` untuk menghasilkan `hard3_classes.json` dari rata-rata AP validasi ketiga model. Ulangi training menggunakan `SCENARIO = "hard3"` dengan daftar kelas yang sama. Setelah foto sendiri dan anotasinya tersedia, aktifkan `ENABLE_PERSONAL = True`, isi lokasi datanya, lalu jalankan inferensi checkpoint yang sudah tersimpan. Section kegagalan menyediakan visualisasi lima foto, tabel penjelasan berdasarkan bukti, serta `MODE = "diagnose"` untuk eksperimen kecil. Bagian foto sendiri dan domain shift dilewati selama flag tersebut tidak aktif.
+
+Gunakan label run yang sama untuk pasangan skenario yang dibandingkan, misalnya `run01`; direktori model dan skenario sudah terpisah. Gunakan label baru untuk percobaan tambahan. Pertahankan `run_config.json` di samping checkpoint. Jika ada beberapa baseline berbeda untuk satu model, batasi `PREVIOUS_RESULTS` ke folder run yang dipilih.
+
+### 5.2. Data dan hasil yang disimpan
+
+Notebook mempertahankan dataset sumber dan membuat salinan kerja di `/kaggle/working/cpmk3/prepared/`. Koreksi orientasi, perhitungan luas mask, dan penomoran ulang ID anotasi dicatat pada laporan normalisasi. Identitas dataset menyertakan anotasi dan hash gambar.
+
+Hasil model disimpan di `/kaggle/working/cpmk3/artifacts/<model>/<skenario>/<run>/`, meliputi best checkpoint, resume checkpoint, konfigurasi, log asli, waktu training, dan mask predictions dalam COCO RLE terkompresi. Direktori ini juga memuat `console_log.txt`, worker script, configuration signature, serta completion marker jika seluruh output model tersedia. Laporan berada di `/kaggle/working/cpmk3/reports/`. Arsip ZIP model dan laporan tersedia di `/kaggle/working/` untuk diunduh bersama output notebook.
+
+Untuk tahap test foto sendiri nanti, siapkan ekspor COCO, `photo_metadata.csv`, bukti metadata, dan folder `annotation_screenshots` sesuai petunjuk di notebook. Saat `ENABLE_PERSONAL = False`, notebook melewati pembacaan foto dan bukti tersebut. Analisis penyebab kegagalan, kesimpulan eksperimen kecil, logbook, dan kasus kesalahan AI dilengkapi berdasarkan proses yang benar-benar terjadi.
+
+Notebook belum memuat hasil training. Kompatibilitas framework, kapasitas batch, dan waktu training tetap perlu diuji pada GPU Kaggle yang diperoleh.
+
+### 5.3. Menyelamatkan progres training
+
+Checkpoint resume disimpan setiap akhir epoch lengkap: `last.pt` untuk YOLO, `last.pth` untuk Mask R-CNN, dan `native/last.ckpt` untuk RF-DETR. Salinan YOLO dan Mask R-CNN ditulis melalui file sementara, kemudian mengganti file terakhir secara atomik agar kegagalan penulisan tidak langsung merusak checkpoint sebelumnya.
+
+Saat cell training selesai, gagal, atau menerima interupsi Python, notebook mencoba membuat `recovery_<model>_<skenario>_<run>.zip` di `/kaggle/working/` melalui blok `finally`. Arsip berisi checkpoint, konfigurasi, dan log yang sudah tersedia; proses ini tidak menunggu inferensi atau seluruh section notebook selesai.
+
+Untuk manual export, interupsi cell training tanpa menghentikan sesi Kaggle. Jalankan tiga cell pada bagian **Ekspor progres tanpa menunggu seluruh notebook**, ubah `EXPORT_RECOVERY_NOW = True`, lalu isi `RECOVERY_RUN` dengan direktori run atau gunakan run terbaru. Pada kernel baru, jalankan **Runtime cell registry** terlebih dahulu. Cell ini tidak membutuhkan instalasi framework maupun pembacaan dataset. Unduh arsip dari panel file/output. Jangan menjalankan ulang semua cell hanya untuk melakukan export.
+
+File pada disk sesi aktif belum menjadi jaminan penyimpanan permanen. Unduh archive/checkpoint ke laptop atau simpan versi notebook dengan output. Jika kernel atau VM dimatikan paksa, blok `finally` tidak dapat dijamin berjalan; progres yang belum masuk checkpoint dan file sesi yang belum disalin dapat hilang. Untuk melanjutkan sequence, upload archive yang sudah diekstrak sebagai Input dan pertahankan configuration/signature files. Untuk single-model mode, `RESUME_CHECKPOINT` dapat diisi secara eksplisit.
