@@ -1,0 +1,58 @@
+{
+  "source_id": "667813460ca1c84415307e7e978d302ebf3f76820de669587c9339e2a83b87e1",
+  "splits": [
+    {
+      "split": "train",
+      "images": 397,
+      "annotations": 4479,
+      "empty_images": 0
+    },
+    {
+      "split": "valid",
+      "images": 166,
+      "annotations": 2022,
+      "empty_images": 1
+    },
+    {
+      "split": "test",
+      "images": 359,
+      "annotations": 5344,
+      "empty_images": 0
+    }
+  ],
+  "size_issues": [
+    {
+      "split": "train",
+      "file_name": "182169107_jpg.rf.c9b1bbecf1474a5b36a6df197c30dfed.jpg",
+      "actual": [
+        480,
+        640
+      ]
+    },
+    {
+      "split": "train",
+      "file_name": "182169121_jpg.rf.eb0ccb71d0ea38adf1e38bf9c02a4a15.jpg",
+      "actual": [
+        480,
+        640
+      ]
+    },
+    {
+      "split": "valid",
+      "file_name": "182169109_jpg.rf.0531e60eb6e404d9633ed0c23a381fe7.jpg",
+      "actual": [
+        480,
+        640
+      ]
+    },
+    {
+      "split": "valid",
+      "file_name": "182169108_jpg.rf.205d9f1ed8f888006b8f97fc29eb8790.jpg",
+      "actual": [
+        480,
+        640
+      ]
+    }
+  ],
+  "exact_duplicates": []
+}
