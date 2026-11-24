@@ -224,47 +224,70 @@ Checklist berikut merangkum kewajiban tugas. Semua kotak masih kosong karena REA
 | 31 | Analisis kegagalan berbasis bukti. |
 | 32 | Bukti proses, penggunaan AI, dan durasi pengerjaan. |
 
-## 5. Notebook Kaggle
+## 5. Notebook Colab L4
 
-Seluruh alur implementasi berada di [01_instance_segmentation_kaggle.ipynb](01_instance_segmentation_kaggle.ipynb): dataset preparation, training, eksperimen NRP, evaluation, dan analisis. Setiap code cell didahului Markdown bernomor hierarkis, misalnya `1.1`, dengan penjelasan formal dan istilah teknis yang dipertahankan. Model yang disiapkan adalah **YOLO11n-seg**, **Mask R-CNN ResNet-50 FPN**, dan **RF-DETR Seg Nano**.
+Gunakan [01_instance_segmentation_kaggle.ipynb](01_instance_segmentation_kaggle.ipynb) di Google Colab. Notebook ini berisi persiapan dataset, training tiga model, evaluasi COCO Mask AP, eksperimen NRP, dan evaluasi foto sendiri. Notebook yang telah dieksekusi disimpan di `results/` sebagai bukti proses.
 
-**Fokus pengerjaan sekarang adalah dataset Roboflow dan perbandingan ketiga model pada semua kelas. Foto HP belum diambil.** Pengambilan foto, anotasi mandiri, dan analisis domain shift dikerjakan pada tahap berikutnya. Biarkan `ENABLE_PERSONAL = False`; tahap saat ini menggunakan 397 gambar train, 166 gambar validasi, dan 359 gambar test asli.
+| Bukti run | Isi |
+| --- | --- |
+| [Kaggle `run01`](results/segmentasi-instance-indoor-evaluasi-cpmk-3.ipynb) dan [laporan](results/reports/) | Baseline awal. CSV memuat hasil validation dan original test untuk YOLO11n dan Mask R-CNN. |
+| [Colab `colab_quality01`, sesi pertama](results/colab/colab_quality01_session1.ipynb) | YOLO11s selesai training dan validation. Mask R-CNN tercatat selesai sampai epoch 13. |
+| [Colab `colab_quality01`, sesi kedua](results/colab/colab_quality01_session2.ipynb) | YOLO11s dilewati, resume Mask R-CNN gagal, dan RF-DETR Seg Small selesai training serta validation. |
+
+`tests/` berisi uji regresi untuk memeriksa notebook utama. Folder `dataset/` dan `outputs/` dipakai untuk data dan hasil kerja lokal. Keduanya diabaikan Git. Output dari training Colab tersimpan di Drive.
 
 ### 5.1. Menjalankan notebook
 
-1. Upload isi folder `dataset/` sebagai Kaggle Dataset, pertahankan direktori `train`, `valid`, dan `test`, lalu tambahkan sebagai Input notebook.
-2. Upload file notebook dan aktifkan Internet untuk instalasi paket serta pengunduhan pretrained weights.
-   Path dataset yang sudah disetel sesuai Input Kaggle: `RAW_DATASET = "/kaggle/input/datasets/mrmfrhann234/dataset-panoptic"`. Folder ini langsung berisi `train`, `valid`, dan `test`. Jika nama atau lokasi Input berubah, sesuaikan nilai tersebut; kosongkan untuk memakai pencarian otomatis.
-3. Konfigurasi default sudah siap untuk training: `MODE = "train"`, `MODEL = "all"`, `SCENARIO = "all_classes"`, `EPOCHS = 30`, `SMOKE_TEST = False`, `FINAL_TEST = True`, dan `ENABLE_PERSONAL = False`.
-4. Aktifkan GPU, lalu jalankan **Run All**. Dataset audit dan orientation correction dilakukan sebelum sequence training. Gunakan `MODE = "prepare"` bila hanya memerlukan audit; gunakan `SMOKE_TEST = True` untuk sequence dengan subset kecil dan satu epoch.
-5. Runner menjalankan **YOLO11 → Mask R-CNN → RF-DETR** secara berurutan. Setiap model menggunakan subprocess terpisah agar CUDA context dilepas ketika worker selesai. Dependencies tambahan diinstal pada virtual environment per model dengan akses ke paket bawaan Kaggle. Environment dibuat dengan `with_pip=False` untuk menghindari kegagalan `ensurepip`; modul `pip` diakses dari parent site-packages. Environment yang belum lengkap dikonfigurasi ulang, lalu Python dan pip diperiksa sebelum worker berjalan.
-6. Best checkpoint dipilih dari validation metrics. Setelah training, worker mengekspor validation predictions dan menjalankan test evaluation pada dataset asli. Foto HP dan daftar hard3 tidak diperlukan untuk tahap ini.
-7. Notebook menggabungkan metrics dari seluruh worker yang berhasil. Status sequence tersedia pada `/kaggle/working/cpmk3/sequence/all_classes/run01/sequence_status.json` dan console log masing-masing model pada direktori artifact.
+1. Buka notebook di Colab, pilih **L4 GPU** pada pengaturan runtime, lalu jalankan cell. Hubungkan Google Drive saat diminta. Jenis GPU aktual dicatat dalam `environment_train.json`. [FAQ Google Colab](https://research.google.com/colaboratory/faq.html)
+2. Konfigurasi `RUNTIME = "colab"` membaca `RAW_DATASET` langsung dari `/content/drive/MyDrive/Computer_Vision_Tugas_CPMK3/dataset`. Setiap split `train`, `valid`, dan `test` harus berisi `_annotations.coco.json` dan gambar yang dirujuk. Cell 2.1 menampilkan path yang digunakan dan daftar file jika ada yang hilang. Notebook menyalin gambar tersebut ke disk Colab dan mempertahankan split 397/166/359 serta fingerprint baseline. Untuk menjalankan di laptop, gunakan `RUNTIME = "local"`.
+3. Set `SMOKE_TEST = True` untuk menjalankan satu epoch dengan subset dataset. Setelah pipeline lolos, kembalikan `SMOKE_TEST = False`. Konfigurasi siap training memakai `MODE = "train"`, `MODEL = "all"`, `TRAIN_PROFILE = "quality"`, `RUN_LABEL = "colab_quality01"`, dan `EPOCHS = 30`. Model berjalan satu per satu pada subprocess terpisah. Untuk satu model, pilih `yolo11`, `maskrcnn`, atau `rfdetr`.
+4. Default `FINAL_TEST = False` memberi hasil validation untuk pemilihan konfigurasi. Setelah checkpoint dipilih, jalankan mode `predict` dengan `FINAL_TEST = True` dan label evaluasi baru. Gunakan `MODE = "prepare"` untuk audit saja. Foto sendiri tetap disiapkan sebagai test set terpisah dengan `ENABLE_PERSONAL = False` selama anotasi dan bukti belum lengkap.
 
-`CONTINUE_ON_ERROR = True` membuat ordinary error pada satu model dicatat tanpa membatalkan model berikutnya. KeyboardInterrupt menghentikan seluruh sequence. Jika semua worker gagal, notebook menampilkan error setelah ketiganya dicoba. `SKIP_COMPLETED = True` melewati model yang output dan configuration signature-nya sesuai. `AUTO_RESUME = True` menggunakan checkpoint optimizer yang tersedia; jika training sudah selesai dan evaluation gagal, worker menjalankan inference ulang.
+### 5.2. Profil training dan kriteria perbandingan
 
-Untuk melanjutkan sesi sebelumnya, tambahkan output atau recovery archive yang sudah diekstrak sebagai Input. Runner memulihkan direktori artifact yang memiliki signature sesuai ke direktori kerja. Jika terdapat beberapa backup untuk run yang sama, batasi `PREVIOUS_RESULTS` ke satu sumber yang dipilih. Parameter atau source code yang berubah memerlukan `RUN_LABEL` baru. Gunakan `MODEL = "yolo11"`, `"maskrcnn"`, atau `"rfdetr"` apabila hanya satu model yang perlu dijalankan.
+| Model | `baseline` | `quality` |
+| --- | --- | --- |
+| YOLO11 | YOLO11n-seg, input 640, mosaic 1,0, mask ratio 4 | YOLO11s-seg, input 640, mosaic 0,4, mask ratio 2, patience 10 |
+| Mask R-CNN | ResNet-50 FPN, input 480–640, StepLR | Arsitektur dan input yang sama, ReduceLROnPlateau berdasarkan Mask AP validation |
+| RF-DETR | Seg Nano, input 312 | Seg Small, input 384, early stopping berdasarkan validation |
 
-Tahap berikutnya: gunakan `MODE = "select_classes"` untuk menghasilkan `hard3_classes.json` dari rata-rata AP validasi ketiga model. Ulangi training menggunakan `SCENARIO = "hard3"` dengan daftar kelas yang sama. Setelah foto sendiri dan anotasinya tersedia, aktifkan `ENABLE_PERSONAL = True`, isi lokasi datanya, lalu jalankan inferensi checkpoint yang sudah tersimpan. Section kegagalan menyediakan visualisasi lima foto, tabel penjelasan berdasarkan bukti, serta `MODE = "diagnose"` untuk eksperimen kecil. Bagian foto sendiri dan domain shift dilewati selama flag tersebut tidak aktif.
+Profil `quality` menguji perubahan recipe untuk input indoor dan data latih terbatas. Bandingkan Mask AP50–95, AP per ukuran objek, AP per kelas, dukungan kelas train, dan waktu GPU pada validation. Untuk mengetahui efek suatu parameter, gunakan label run baru dan ubah satu parameter dari profil pembanding. RF-DETR memakai `RFDETR_AMP_DTYPE = "auto"`. Jika warning numerik berulang, `None` tersedia untuk percobaan FP32. L4 memberi ruang untuk eksperimen, sementara besar peningkatan AP perlu diukur pada run. [Parameter YOLO](https://docs.ultralytics.com/modes/train/) · [Model RF-DETR Segmentation](https://rfdetr.roboflow.com/latest/learn/run/segmentation/) · [Precision RF-DETR](https://rfdetr.roboflow.com/latest/learn/train/training-parameters/#training-precision)
 
-Gunakan label run yang sama untuk pasangan skenario yang dibandingkan, misalnya `run01`; direktori model dan skenario sudah terpisah. Gunakan label baru untuk percobaan tambahan. Pertahankan `run_config.json` di samping checkpoint. Jika ada beberapa baseline berbeda untuk satu model, batasi `PREVIOUS_RESULTS` ke folder run yang dipilih.
+### 5.3. Artifact, checkpoint, dan resume
 
-### 5.2. Data dan hasil yang disimpan
+Root hasil pada Drive adalah `MyDrive/Computer_Vision_Tugas_CPMK3/outputs`.
 
-Notebook mempertahankan dataset sumber dan membuat salinan kerja di `/kaggle/working/cpmk3/prepared/`. Koreksi orientasi, perhitungan luas mask, dan penomoran ulang ID anotasi dicatat pada laporan normalisasi. Identitas dataset menyertakan anotasi dan hash gambar.
+| Lokasi relatif | Isi |
+| --- | --- |
+| `artifacts/<model>/<skenario>/<run>/` | Best checkpoint, checkpoint resume, konfigurasi, log model, masks COCO RLE, serta metrics dan per-class CSV. `console_log.txt` disimpan saat model dijalankan melalui runner berurutan. |
+| `sequence/<skenario>/<run>/` | Status ketiga worker dan durasi per worker. |
+| `reports/<skenario>/<run>/` | Audit, distribusi kelas, normalisasi, dan tabel perbandingan. |
 
-Hasil model disimpan di `/kaggle/working/cpmk3/artifacts/<model>/<skenario>/<run>/`, meliputi best checkpoint, resume checkpoint, konfigurasi, log asli, waktu training, dan mask predictions dalam COCO RLE terkompresi. Direktori ini juga memuat `console_log.txt`, worker script, configuration signature, serta completion marker jika seluruh output model tersedia. Laporan berada di `/kaggle/working/cpmk3/reports/`. Arsip ZIP model dan laporan tersedia di `/kaggle/working/` untuk diunduh bersama output notebook.
+Checkpoint training ditulis ke Drive saat epoch selesai. Resume memakai `last.pt` untuk YOLO, `last.pth` untuk Mask R-CNN, dan `native/last.ckpt` untuk RF-DETR. Jika `native/last.ckpt` gagal dimuat setelah runtime terputus saat menulis, RF-DETR juga menyimpan checkpoint periodik pada epoch kelipatan sepuluh.
 
-Untuk tahap test foto sendiri nanti, siapkan ekspor COCO, `photo_metadata.csv`, bukti metadata, dan folder `annotation_screenshots` sesuai petunjuk di notebook. Saat `ENABLE_PERSONAL = False`, notebook melewati pembacaan foto dan bukti tersebut. Analisis penyebab kegagalan, kesimpulan eksperimen kecil, logbook, dan kasus kesalahan AI dilengkapi berdasarkan proses yang benar-benar terjadi.
+Pada sesi baru, jalankan kembali `MODEL = "all"` dengan label dan konfigurasi yang sama untuk auto-resume dan melewati model dengan output lengkap. Atur `RESUME_CHECKPOINT` jika melanjutkan satu model secara eksplisit. Gunakan label baru untuk konfigurasi atau source worker yang berubah. Jalankan satu sesi per direktori run. `EXPORT_ZIPS = True` mengaktifkan arsip tambahan, sedangkan bagian 1.2–1.4 membuat recovery ZIP manual untuk direktori run yang dipilih.
 
-Notebook belum memuat hasil training. Kompatibilitas framework, kapasitas batch, dan waktu training tetap perlu diuji pada GPU Kaggle yang diperoleh.
+Jika resume Mask R-CNN sebelumnya gagal dengan `RNG state must be a torch.ByteTensor`, buka notebook versi perbaikan dan jalankan dengan label serta konfigurasi lama. Notebook memulihkan state RNG CUDA dari tensor CPU dan menerima signature lama untuk perubahan ini.
 
-### 5.3. Menyelamatkan progres training
+### 5.4. Evaluasi RF-DETR lama, hard3, dan foto sendiri
 
-Checkpoint resume disimpan setiap akhir epoch lengkap: `last.pt` untuk YOLO, `last.pth` untuk Mask R-CNN, dan `native/last.ckpt` untuk RF-DETR. Salinan YOLO dan Mask R-CNN ditulis melalui file sementara, kemudian mengganti file terakhir secara atomik agar kegagalan penulisan tidak langsung merusak checkpoint sebelumnya.
+Pada run Kaggle sebelumnya, YOLO dan Mask R-CNN selesai dievaluasi. RF-DETR mencapai 30 epoch dan menyimpan best checkpoint sebelum inferensi terhenti pada `KeyError: 74`. Adapter sekarang menyaring slot background sebelum menerapkan batas prediksi. Indeks foreground 73 tetap dipetakan ke ID kategori asli 74. [Source RF-DETR 1.12.1](https://github.com/roboflow/rf-detr/blob/1.12.1/src/rfdetr/_prediction/core.py)
 
-Saat cell training selesai, gagal, atau menerima interupsi Python, notebook mencoba membuat `recovery_<model>_<skenario>_<run>.zip` di `/kaggle/working/` melalui blok `finally`. Arsip berisi checkpoint, konfigurasi, dan log yang sudah tersedia; proses ini tidak menunggu inferensi atau seluruh section notebook selesai.
+Untuk memakai checkpoint RF-DETR lama di Colab, ekstrak recovery ZIP ke Drive dan letakkan `run_config.json` di samping `best.pth`. Sesuaikan `INFERENCE_CHECKPOINT` dengan direktori ekstraksi.
 
-Untuk manual export, interupsi cell training tanpa menghentikan sesi Kaggle. Jalankan tiga cell pada bagian **Ekspor progres tanpa menunggu seluruh notebook**, ubah `EXPORT_RECOVERY_NOW = True`, lalu isi `RECOVERY_RUN` dengan direktori run atau gunakan run terbaru. Pada kernel baru, jalankan **Runtime cell registry** terlebih dahulu. Cell ini tidak membutuhkan instalasi framework maupun pembacaan dataset. Unduh arsip dari panel file/output. Jangan menjalankan ulang semua cell hanya untuk melakukan export.
+```python
+MODE = "predict"
+MODEL = "rfdetr"
+RUN_LABEL = "run01_evalfix"
+INFERENCE_CHECKPOINT = "/content/drive/MyDrive/Computer_Vision_Tugas_CPMK3/previous/rfdetr/run01/best.pth"
+FINAL_TEST = True
+ENABLE_PERSONAL = False
+```
 
-File pada disk sesi aktif belum menjadi jaminan penyimpanan permanen. Unduh archive/checkpoint ke laptop atau simpan versi notebook dengan output. Jika kernel atau VM dimatikan paksa, blok `finally` tidak dapat dijamin berjalan; progres yang belum masuk checkpoint dan file sesi yang belum disalin dapat hilang. Untuk melanjutkan sequence, upload archive yang sudah diekstrak sebagai Input dan pertahankan configuration/signature files. Untuk single-model mode, `RESUME_CHECKPOINT` dapat diisi secara eksplisit.
+Notebook membaca resolusi dan asal run dari konfigurasi checkpoint. Langkah yang sama berlaku untuk mengevaluasi checkpoint terpilih dari model lain. Untuk YOLO gunakan `best.pt` dan untuk Mask R-CNN gunakan `best.pth`.
+
+Sesudah hasil validation ketiga model tersedia, jalankan `MODE = "select_classes"`. Isi `HARD3_BASELINE_RUNS` dengan label run per model jika Drive memuat beberapa kandidat. Gunakan daftar kelas yang dihasilkan untuk training `SCENARIO = "hard3"` dan evaluasi pasangan all_classes dan hard3 pada tiga kelas yang identik. Tetapkan label evaluasi yang sama di kedua skenario agar tabel perbandingannya berpasangan.
+
+Sebanyak 44 foto HP tersedia, dengan 11 foto diberi label visual sulit. Untuk mengaktifkan evaluasi foto sendiri, lengkapi anotasi COCO, `photo_metadata.csv` dengan nama file yang cocok dan bukti EXIF, serta `annotation_screenshots`. Isi `PERSONAL_DATASET` dan ubah `ENABLE_PERSONAL = True`. Setelah evaluasi, pilih lima contoh kegagalan untuk analisis dan eksperimen kecil.
+
+Jalankan `python -m unittest discover -s tests -v` dengan NumPy untuk pemeriksaan CPU. Kompatibilitas runtime L4 dan skor profil baru menunggu eksekusi di Colab.
