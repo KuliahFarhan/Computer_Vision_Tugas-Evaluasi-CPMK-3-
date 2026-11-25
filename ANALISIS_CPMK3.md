@@ -6,7 +6,7 @@
 
 ## 1. Ringkasan hasil
 
-RF-DETR Seg Small memperoleh Mask AP tertinggi, yaitu **19,07%** pada test Roboflow dan **38,31%** pada test foto mandiri dengan anotasi v2. Keunggulannya juga terlihat saat evaluasi dibatasi ke 31 kelas yang memiliki ground truth di kedua test set. Eksperimen NRP menunjukkan bahwa training dengan tiga kelas tersulit menurunkan skor YOLO11s-seg dan Mask R-CNN. RF-DETR naik tipis sebesar 0,19 poin. Dalam eksperimen confidence, ambang yang lebih rendah memulihkan dua dari lima contoh, dengan tambahan false positive pada ketiga model. [Evaluasi v2](04_evaluasi_foto_pribadi_colab_v2.ipynb) · [Eksperimen NRP](05_eksperimen_hard3_colab.ipynb) · [Analisis kasus terbaru](06_analisis_foto_pribadi_colab_v2.ipynb)
+RF-DETR Seg Small memperoleh Mask AP tertinggi, yaitu **19,07%** pada test Roboflow dan **38,31%** pada test foto mandiri. Keunggulannya juga terlihat saat evaluasi dibatasi ke 31 kelas yang memiliki ground truth di kedua test set. Eksperimen NRP (018) menunjukkan bahwa training dengan tiga kelas tersulit menurunkan skor YOLO11s-seg dan Mask R-CNN. RF-DETR naik tipis sebesar 0,19 poin. Dalam eksperimen confidence, ambang yang lebih rendah memulihkan dua dari lima contoh, dengan tambahan false positive pada ketiga model. [Evaluasi kedua test set](04_evaluasi_foto_pribadi_colab_v2.ipynb) · [Eksperimen NRP](05_eksperimen_hard3_colab.ipynb) · [Analisis lima kasus](06_analisis_foto_pribadi_colab_v2.ipynb)
 
 ## 2. Dataset, anotasi, dan skenario evaluasi
 
@@ -18,7 +18,7 @@ Eksperimen memakai **Panoptic Indoor Segmentation v5** dengan **397 gambar train
 | Mask R-CNN ResNet-50 FPN | CNN two-stage, region proposal dan mask per RoI | `colab_quality02/best.pth` |
 | RF-DETR Seg Small | Detection Transformer dengan segmentation head | `colab_quality01/best.pth` |
 
-Test mandiri terdiri dari **56 foto yang diambil dengan kamera HP**, termasuk **17 foto sulit**. Nama file dan dimensi foto dicocokkan dengan COCO. Pekerjaan anotasi mencakup anotasi di Roboflow, bantuan Mask2Former dan Grounding DINO + SAM, serta pemeriksaan label oleh mahasiswa. Audit revisi mengoreksi 13 label dan mengeluarkan 69 entri, termasuk duplikat dan mask yang hanya menandai bagian dari objek yang sudah tercatat. **COCO v2 berisi 430 mask pada seluruh 56 foto dan 31 kelas yang punya ground truth.** Saat audit awal, 63 entri ditandai untuk pemeriksaan lanjutan. Revisi yang diterapkan telah disetujui, dengan keputusan per entri yang masih meragukan belum tercatat lengkap. [Bukti proses anotasi di Roboflow](evidence/bukti-anotasi-roboflow.png) · [Validasi COCO dan metadata di Colab](04_evaluasi_foto_pribadi_colab_v2.ipynb)
+Test mandiri terdiri dari **56 foto yang diambil dengan kamera HP**, termasuk **17 foto sulit**. Nama file dan dimensi foto dicocokkan dengan COCO. Pekerjaan anotasi mencakup anotasi di Roboflow, bantuan Mask2Former dan Grounding DINO + SAM, serta pemeriksaan label oleh mahasiswa. Audit memeriksa kesesuaian label dan duplikasi mask. **COCO foto pribadi berisi 430 mask pada 56 foto, dengan ground truth untuk 31 kelas.** Label dan batas mask yang masih ambigu menjadi keterbatasan evaluasi. [Bukti proses anotasi di Roboflow](evidence/bukti-anotasi-roboflow.png) · [Validasi COCO dan metadata di Colab](04_evaluasi_foto_pribadi_colab_v2.ipynb)
 
 Foto mandiri dipakai untuk pengujian. Hasil utama menggunakan **COCO Mask AP50–95**, yaitu AP mask pada sepuluh ambang IoU dari 0,50 hingga 0,95 yang dirata-ratakan atas kelas yang bisa dievaluasi. Mask AP50 memakai ambang IoU 0,50. [Evaluator COCO](https://github.com/cocodataset/cocoapi/blob/master/PythonAPI/pycocotools/cocoeval.py)
 
@@ -26,17 +26,17 @@ Foto mandiri dipakai untuk pengujian. Hasil utama menggunakan **COCO Mask AP50�
 
 ### 3.1 Evaluasi dua test set
 
-| Model | Mask AP Roboflow | Mask AP50 Roboflow | Mask AP foto v2 | Mask AP50 foto v2 |
+| Model | Mask AP Roboflow | Mask AP50 Roboflow | Mask AP foto pribadi | Mask AP50 foto pribadi |
 |---|---:|---:|---:|---:|
 | YOLO11s-seg | 11,05% | 17,23% | 18,20% | 25,53% |
 | Mask R-CNN | 7,67% | 13,16% | 16,23% | 23,00% |
 | **RF-DETR Seg Small** | **19,07%** | **27,36%** | **38,31%** | **46,41%** |
 
-Ketiga worker berstatus `completed`. Tabel menggunakan 359 gambar Roboflow dan 56 foto mandiri. Perbandingan langsung antarsplit mencakup populasi kelas beranotasi yang berbeda, yaitu 69 kelas di Roboflow dan 31 kelas pada foto pribadi v2. [Tabel evaluasi v2](04_evaluasi_foto_pribadi_colab_v2.ipynb)
+Ketiga worker berstatus `completed`. Tabel menggunakan 359 gambar Roboflow dan 56 foto mandiri. Perbandingan langsung antarsplit mencakup populasi kelas beranotasi yang berbeda, yaitu 69 kelas di Roboflow dan 31 kelas pada foto pribadi. [Tabel evaluasi](04_evaluasi_foto_pribadi_colab_v2.ipynb)
 
 ### 3.2 Perbandingan pada 31 kelas bersama
 
-| Model | Mask AP Roboflow | Mask AP foto v2 | Selisih foto pribadi − Roboflow |
+| Model | Mask AP Roboflow | Mask AP foto pribadi | Selisih foto pribadi − Roboflow |
 |---|---:|---:|---:|
 | YOLO11s-seg | 10,68% | 18,20% | +7,52 poin |
 | Mask R-CNN | 8,32% | 16,23% | +7,92 poin |
@@ -44,17 +44,9 @@ Ketiga worker berstatus `completed`. Tabel menggunakan 359 gambar Roboflow dan 5
 
 ![Mask AP ketiga model pada 31 kelas bersama](evidence/figures/domain-shift-31-kelas.png)
 
-Selisih dihitung sebelum pembulatan. Skor foto pribadi tetap lebih tinggi setelah kelas disamakan. Karena jumlah instance per kelas, pencahayaan, susunan objek, dan kebijakan anotasi masih dapat berbeda, eksperimen ini menunjukkan selisih performa antar-test set pada sampel yang tersedia. Penyebab perbedaan tersebut belum terisolasi oleh desain evaluasi. [Analisis domain shift](06_analisis_foto_pribadi_colab_v2.ipynb)
+Selisih dihitung sebelum pembulatan. Skor foto pribadi tetap lebih tinggi setelah kelas disamakan. Pada 31 kelas bersama, median luas mask ground truth relatif terhadap luas foto adalah **4,34%** pada foto pribadi dan **1,71%** pada Roboflow. Median jumlah mask beranotasi per foto adalah **5** pada foto pribadi dan **7** pada Roboflow. Luas dihitung dari jumlah piksel mask COCO yang dirasterisasi, dibagi dengan luas gambar asal.
 
-### 3.3 Dampak audit ground truth
-
-| Model | Mask AP foto v1 | Mask AP foto v2 | Perubahan |
-|---|---:|---:|---:|
-| YOLO11s-seg | 14,84% | 18,20% | +3,36 poin |
-| Mask R-CNN | 12,67% | 16,23% | +3,56 poin |
-| RF-DETR Seg Small | 30,10% | 38,31% | +8,21 poin |
-
-Run v1 dan v2 memakai checkpoint yang sama pada 56 foto yang sama. Jumlah mask dan cakupan kelas berubah dari **499 mask dan 39 kelas** menjadi **430 mask dan 31 kelas**. Sebagai contoh, foto `v2_028` semula memiliki mask hampir identik untuk `plate`, `bowl`, dan `pan`. Audit menyisakan mask `plate` pada objek itu. Kenaikan skor dicatat sebagai perubahan evaluasi setelah audit ground truth. Perbandingan v1 terhadap v2 juga mencakup perubahan komposisi kelas dan run inferensi yang berbeda, dari T4 ke L4. Skor test Roboflow kedua run berbeda sekitar 0,02 poin atau kurang pada setiap model. [Evaluasi v1](results/colab/eval_personal56_v1.ipynb) · [Evaluasi v2](04_evaluasi_foto_pribadi_colab_v2.ipynb)
+Objek yang menempati bagian lebih besar dari foto cenderung memiliki kontur yang lebih mudah dikenali. Kesalahan beberapa piksel pada batasnya juga dapat berdampak lebih kecil pada Mask IoU. Perbedaan ukuran ini memberi penjelasan yang masuk akal untuk kenaikan AP. Jumlah mask beranotasi mencerminkan susunan objek sekaligus cakupan anotasi. Pengaruh ukuran, pencahayaan, susunan objek, dan konsistensi anotasi belum diukur secara terpisah. [Analisis domain shift](06_analisis_foto_pribadi_colab_v2.ipynb)
 
 ## 4. Eksperimen NRP 5054241018
 
@@ -80,7 +72,7 @@ Spesialisasi pada tiga kelas memberi hasil yang berbeda antar-model. YOLO berhen
 
 ## 5. Lima studi kasus kegagalan
 
-Kasus diambil dari Notebook 06 v2 dengan run `analisis_personal56_v2_kasus_revisi`. Foto `v2_023` diganti dengan `v2_029` karena label `paper` pada foto lama mengikuti area yang terlihat seperti dinding. Pergantian hanya berlaku pada pemilihan ilustrasi. Eksperimen threshold dan evaluasi agregat tetap memakai seluruh 56 foto.
+Lima studi kasus dipilih dari prediksi pada foto pribadi. Eksperimen threshold dan evaluasi agregat mencakup seluruh 56 foto. [Notebook analisis](06_analisis_foto_pribadi_colab_v2.ipynb)
 
 Setiap baris melaporkan ground truth, kandidat prediksi, dan Mask IoU. Hubungan dengan mekanisme model dibahas sebagai penjelasan yang sesuai dengan bukti visual. Eksperimen hanya mengubah ambang confidence, sehingga pengaruh komponen internal seperti resolusi mask belum diukur.
 
@@ -104,7 +96,7 @@ Setiap baris melaporkan ground truth, kandidat prediksi, dan Mask IoU. Hubungan 
 
 ### 5.4 RF-DETR memberi label trash-bin pada gelas
 
-**Foto `v2_029` · Ground truth `cup`.** Ini kasus pengganti yang terpilih dari prediksi v2. RF-DETR memberi label `trash-bin` dengan score 0,93 dan IoU sekitar 0,99 pada kedua confidence threshold. Mask yang hampir tepat menunjukkan bahwa model sudah menemukan lokasi dan bentuk gelas. Hasil klasifikasi menunjukkan kemungkinan kebingungan kategori pada wadah berbentuk meruncing. Ambang yang lebih rendah belum menghasilkan mask `cup` yang memenuhi syarat kecocokan pada foto ini. [Arsitektur RF-DETR](https://arxiv.org/abs/2511.09554)
+**Foto `v2_029` · Ground truth `cup`.** RF-DETR memberi label `trash-bin` dengan score 0,93 dan IoU sekitar 0,99 pada kedua confidence threshold. Mask yang hampir tepat menunjukkan bahwa model sudah menemukan lokasi dan bentuk gelas. Hasil klasifikasi menunjukkan kemungkinan kebingungan kategori pada wadah berbentuk meruncing. Ambang yang lebih rendah belum menghasilkan mask `cup` yang memenuhi syarat kecocokan pada foto ini. [Arsitektur RF-DETR](https://arxiv.org/abs/2511.09554)
 
 ![RF-DETR pada gelas plastik](evidence/figures/kasus-04.png)
 
@@ -134,17 +126,17 @@ Prediksi tersimpan dihitung ulang dengan confidence **0,25** dan **0,05**. Pada 
 |---|---|---:|---:|---:|
 | Training `all_classes` | L4 | 8 m 51 d | 34 m 34 d | 35 m 52 d |
 | Training dan evaluasi `hard3` | L4 | 4 m 06 d | 20 m 36 d | 28 m 49 d |
-| Evaluasi `eval_personal56_v2` | L4 | 2 m 58 d | 4 m 17 d | 2 m 17 d |
+| Evaluasi kedua test set | L4 | 2 m 58 d | 4 m 17 d | 2 m 17 d |
 
-Durasi Mask R-CNN `all_classes` adalah jumlah waktu 30 epoch dalam log `colab_quality02`. Kolom lain menggunakan durasi worker yang dicetak notebook, termasuk persiapan dan evaluasi yang dilakukan worker. Total waktu worker `hard3` sekitar **53 m 30 d** dan evaluasi v2 sekitar **9 m 33 d**. Riwayat sesi meliputi kendala resume CUDA pada percobaan Mask R-CNN sebelumnya dan keputusan menjalankan ulang model itu dengan label baru. [Colab sesi 1](results/colab/colab_quality01_session1.ipynb) · [Colab sesi 2](results/colab/colab_quality01_session2.ipynb) · [Mask R-CNN quality02](results/colab/colab_quality02_maskrcnn.ipynb) · [Logbook](LOGBOOK.md)
+Durasi Mask R-CNN `all_classes` adalah jumlah waktu 30 epoch dalam log `colab_quality02`. Kolom lain menggunakan durasi worker yang dicetak notebook, termasuk persiapan dan evaluasi yang dilakukan worker. Total waktu worker `hard3` sekitar **53 m 30 d** dan evaluasi kedua test set sekitar **9 m 33 d**. Riwayat sesi meliputi kendala resume CUDA pada percobaan Mask R-CNN sebelumnya dan keputusan menjalankan ulang model itu dengan label baru. [Colab sesi 1](results/colab/colab_quality01_session1.ipynb) · [Colab sesi 2](results/colab/colab_quality01_session2.ipynb) · [Mask R-CNN quality02](results/colab/colab_quality02_maskrcnn.ipynb) · [Logbook](LOGBOOK.md)
 
-Log epoch dan output training tercantum pada notebook eksekusi. Arsip `results.csv`, TensorBoard, atau log native untuk run final masih perlu ditautkan dari Drive ke paket bukti. [Riwayat Git repository](https://github.com/KuliahFarhan/Computer_Vision_Tugas-Evaluasi-CPMK-3-/commits)
+Log training skenario semua kelas tersedia sebagai CSV untuk YOLO11s-seg (`colab_quality01`) dan Mask R-CNN (`colab_quality02`), serta berkas TensorBoard untuk RF-DETR Seg Small (`colab_quality01`). Ketiga berkas ditemukan di Drive. Akses penilai ke tautan masih perlu dipastikan. [CSV YOLO](https://drive.google.com/file/d/1IAhz5Iw1eeHmef0u75kyz18VEOrBl2cC/view?usp=drive_link) · [CSV Mask R-CNN](https://drive.google.com/file/d/1gmMSFbj-uzc-Bri4D-50K2n5qNd_wkyU/view?usp=drive_link) · [TensorBoard RF-DETR](https://drive.google.com/file/d/1BRpkx9Z3BTyCZO9CQ2NIeo-C_j4eSFZl/view?usp=drive_link) · [Riwayat commit](https://github.com/KuliahFarhan/Computer_Vision_Tugas-Evaluasi-CPMK-3-/commits)
 
 ### 6.2 Hipotesis bertanggal dan bukti foto
 
-Logbook memuat rekonstruksi asumsi awal, kendala, dan keputusan selama eksperimen. Bukti hipotesis asli bertanggal sebelum training pertama belum ditemukan pada file yang diperiksa. Jika tersedia, tautkan catatan aslinya dan pertahankan tanggal pencatatan yang sebenarnya. [Logbook](LOGBOOK.md)
+Hipotesis awal memperkirakan YOLO11s-seg paling efisien, Mask R-CNN menghasilkan mask yang lebih presisi daripada YOLO11s-seg, dan RF-DETR Seg Small unggul dalam akurasi segmentasi dan generalisasi. RF-DETR memperoleh Mask AP tertinggi pada kedua test set. Mask AP agregat Mask R-CNN berada di bawah YOLO11s-seg pada kedua test set, sedangkan presisi batas mask memerlukan metrik tersendiri. Durasi worker mencakup lebih dari inferensi, sehingga kecepatan inferensi memerlukan pengukuran dengan protokol yang sama. Hipotesis dicatat kembali pada 25 November. Bukti pencatatan sebelum training pertama dan prediksi untuk kelas tertentu masih perlu dilengkapi jika tersedia. [Logbook](LOGBOOK.md)
 
-Screenshot Roboflow memperlihatkan mask dan label pada foto `indoor_5054241018_013.jpeg` di editor. Metadata seleksi mencatat status kondisi sulit pada 56 foto. Pemeriksaan salinan lokal tidak menemukan tag model kamera atau waktu pemotretan, dan kolom `exif_proof` masih kosong. Bukti EXIF perlu diambil dari file asli di HP atau arsip yang masih membawa metadata. [Screenshot anotasi](evidence/bukti-anotasi-roboflow.png) · [Output cek bukti](04_evaluasi_foto_pribadi_colab_v2.ipynb)
+Screenshot Roboflow memperlihatkan mask dan label pada foto `indoor_5054241018_013.jpeg` di editor. Metadata seleksi mencatat status kondisi sulit pada 56 foto. Setelah foto uji dicocokkan dengan isi folder foto asli, **44 dari 56 foto** memiliki pasangan unik dengan model kamera **motorola moto g45 5G** dan tanggal pemotretan **24 November 2026** pada tag EXIF `DateTimeOriginal`. Sebanyak 13 dari 17 foto sulit termasuk dalam kelompok terverifikasi. Dua belas foto lainnya belum ditemukan padanannya di folder asli yang diperiksa. [Screenshot anotasi](evidence/bukti-anotasi-roboflow.png) · [Pemetaan foto dan metadata EXIF](evidence/metadata-foto-mandiri.csv)
 
 ### 6.3 Deklarasi penggunaan AI
 
@@ -164,19 +156,19 @@ Salah satu kesalahan konkret terjadi pada Notebook 04 awal. Kode memperlakukan C
 |---|---|---|
 | Menyiapkan Panoptic Indoor Segmentation v5 | Selesai | Split 397/166/359, audit, dan normalisasi tercatat. |
 | Minimal tiga model dari dua keluarga | Selesai | YOLO11s-seg, Mask R-CNN, RF-DETR Seg Small. |
-| Minimal 40 foto ruangan dari HP sendiri | Selesai | 56 foto pada manifest dan COCO v2. |
+| Minimal 40 foto ruangan dari HP sendiri | Selesai | 56 foto pada manifest dan COCO foto pribadi. |
 | Minimal 10 foto kondisi sulit | Selesai | 17 dari 56 terverifikasi lewat metadata seleksi. |
-| Anotasi sendiri di Roboflow dan kelas konsisten | Paket evaluasi tersedia | Screenshot proses tersedia. COCO v2 selaras dengan 74 ID kelas training. Metode manual dan bantuan AI dicatat. |
-| Screenshot anotasi dan EXIF/metadata asli | Sebagian | Screenshot ada. EXIF asli masih perlu dilampirkan. |
-| Training dan log asli | Training selesai | Notebook eksekusi menyimpan log. Arsip log native dari Drive perlu ditautkan. |
-| Evaluasi kedua test set | Selesai | Ketiga worker evaluasi v2 selesai. |
+| Anotasi sendiri di Roboflow dan kelas konsisten | Paket evaluasi tersedia | Screenshot proses tersedia. Paket COCO selaras dengan 74 ID kelas training. Metode manual dan bantuan AI dicatat. |
+| Screenshot anotasi dan EXIF/metadata asli | Sebagian | Screenshot tersedia. EXIF terverifikasi untuk 44 foto, dengan 12 foto yang masih memerlukan berkas asli. |
+| Training dan log asli | Selesai, akses penilai perlu dicek | Kedua CSV dan berkas TensorBoard RF-DETR ditemukan di Drive. Tautan tercantum pada §6.1. |
+| Evaluasi kedua test set | Selesai | Ketiga worker evaluasi selesai. |
 | Analisis domain shift | Selesai | Mask AP pada 31 kelas bersama dengan penjelasan keterbatasan. |
 | Memilih tiga kelas sulit dan mencatat dasarnya | Selesai | Ranking AP validation dan dukungan train/validation. |
 | Membandingkan `hard3` dan `all_classes` | Selesai | Tabel dan grafik pada set test serta kelas yang sama. |
-| Memilih lima foto kegagalan | Selesai | Lima panel terbaru, termasuk kasus pengganti `v2_029`. |
+| Memilih lima foto kegagalan | Selesai | Lima panel analisis pada bagian 5. |
 | Menjelaskan kegagalan berdasarkan mekanisme | Selesai di laporan | Observasi, kemungkinan mekanisme, dan batas inferensi pada §5. |
 | Eksperimen kecil dan hasil | Selesai | Confidence 0,25 dibanding 0,05, pada lima kasus dan 56 foto. |
-| Waktu GPU dan logbook | Selesai | Durasi tercantum pada §6.1 dan logbook mencatat evaluasi v2 serta penggantian kasus. |
-| Hipotesis sebelum training pertama | Bukti belum ditemukan | Gunakan catatan asli bertanggal jika ada. |
+| Waktu GPU dan logbook | Selesai | Durasi tercantum pada §6.1 dan logbook mencatat eksperimen serta keputusan. |
+| Hipotesis sebelum training pertama | Hipotesis dicatat, bukti tanggal belum ditemukan | Logbook mencatat rumusan hipotesis pada 25 November. Bukti awal dan prediksi per kelas masih perlu dilengkapi. |
 | Deklarasi AI, prompt, dan contoh perbaikan | Selesai di laporan | Tiga prompt dan contoh koreksi kode dicatat pada §6.3. |
-| Demo dan tanya jawab 10 menit | Perlu persiapan | Siapkan inferensi foto baru, konfigurasi confidence, dan penjelasan satu angka hasil. |
+| Demo dan tanya jawab 10 menit | Selesai | Demo telah dilaksanakan bersama dosen berdasarkan konfirmasi mahasiswa. [Notebook demo](07_inferensi_foto_baru_colab.ipynb) |

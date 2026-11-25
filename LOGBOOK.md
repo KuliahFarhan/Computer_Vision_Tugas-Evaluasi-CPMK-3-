@@ -12,9 +12,11 @@ Logbook ini dirangkum secara retrospektif mulai 24 November 2026 dan diperbarui 
 
 Saya membaca ketentuan tugas dan merencanakan perbandingan YOLO11, Mask R-CNN, dan RF-DETR pada Panoptic Indoor Segmentation v5. Ketiganya mewakili pendekatan CNN one-stage, CNN two-stage, dan transformer. Karena NRP berakhir dengan digit 8, eksperimen membandingkan semua kelas dengan tiga kelas tersulit yang dipilih dari hasil validation awal.
 
-Asumsi teknis yang bisa dirangkum dari diskusi awal adalah YOLO11 dipakai sebagai pembanding yang ringan, Mask R-CNN memakai region proposal dan mask per objek, sedangkan RF-DETR menjadi pembanding berbasis transformer. Saya juga memisahkan foto HP sebagai test set mandiri untuk melihat performa pada ruangan dan kondisi pengambilan yang berbeda dari dataset sumber.
+Saya memisahkan foto HP sebagai test set mandiri untuk melihat performa model pada ruangan dan kondisi pengambilan yang berbeda dari dataset sumber.
 
-**Status hipotesis.** Ringkasan di atas disusun kembali dari diskusi. Bukti bertanggal yang menyebut model mana yang diprediksi unggul, pada kelas apa, dan mengapa masih perlu dikonfirmasi. Jika ada, tautkan catatan aslinya di sini.\
+**Hipotesis awal yang dicatat kembali pada 25 November 2026.** Berdasarkan perbedaan karakteristik arsitektur ketiga model, YOLO11s-seg dihipotesiskan memiliki efisiensi komputasi dan kecepatan inferensi terbaik. Mask R-CNN dihipotesiskan menghasilkan segmentasi objek yang lebih presisi daripada YOLO11s-seg melalui pendekatan two-stage dan RoIAlign. RF-DETR Seg Small dihipotesiskan memperoleh akurasi segmentasi keseluruhan dan kemampuan generalisasi terbaik melalui arsitektur Transformer dan pretrained backbone DINOv2.
+
+**Bukti hipotesis.** Bukti pencatatan hipotesis sebelum training pertama dan prediksi untuk kelas tertentu masih perlu dilengkapi dari catatan asli jika tersedia.\
 **Rujukan** [Ketentuan tugas dan variabel NRP](README.md#23-variabel-eksperimen-berdasarkan-nrp).
 
 ### 16 November — Memulai training berdasarkan rancangan awal
@@ -64,6 +66,16 @@ Saya menjalankan profil `quality` di Colab dengan GPU NVIDIA L4. Dataset tetap m
 
 **Bukti** [Colab sesi pertama](results/colab/colab_quality01_session1.ipynb), [Colab sesi kedua](results/colab/colab_quality01_session2.ipynb), dan [notebook utama](01_instance_segmentation_kaggle.ipynb).
 
+#### Log training run final semua kelas
+
+| Model | Run | Berkas di Google Drive |
+| --- | --- | --- |
+| YOLO11s-seg | `colab_quality01` | [training_log.csv](https://drive.google.com/file/d/1IAhz5Iw1eeHmef0u75kyz18VEOrBl2cC/view?usp=drive_link) · [results.csv dari Ultralytics](https://drive.google.com/file/d/1zN5f4Fg4gX1kkIk_dR69FVwGPJGaA5EJ/view?usp=drive_link) |
+| Mask R-CNN | `colab_quality02` | [training_log.csv](https://drive.google.com/file/d/1gmMSFbj-uzc-Bri4D-50K2n5qNd_wkyU/view?usp=drive_link) |
+| RF-DETR Seg Small | `colab_quality01` | [Log TensorBoard](https://drive.google.com/file/d/1BRpkx9Z3BTyCZO9CQ2NIeo-C_j4eSFZl/view?usp=drive_link) |
+
+Untuk YOLO, notebook menyalin `native/results.csv` menjadi `training_log.csv`. Kedua CSV `training_log.csv` dan berkas TensorBoard RF-DETR ditemukan di Drive. Akses penilai ke tautan tersebut masih perlu dipastikan.
+
 ### Catatan durasi pada log
 
 Durasi worker mencakup persiapan dan evaluasi yang dijalankan oleh worker. Durasi Mask R-CNN sesi pertama di Colab dihitung dari total waktu 13 epoch yang tercatat.
@@ -76,6 +88,7 @@ Durasi worker mencakup persiapan dan evaluasi yang dijalankan oleh worker. Duras
 | Colab `colab_quality01`, L4 | YOLO11s-seg | 8 menit 51 detik | Selesai training dan validation |
 | Colab `colab_quality01`, L4 | Mask R-CNN | 14 menit 59 detik | Total 13 epoch beserta validation per epoch |
 | Colab `colab_quality01`, L4 | RF-DETR Seg Small | 35 menit 52 detik | Selesai training dan validation |
+| Colab `colab_quality02`, L4 | Mask R-CNN | 34 menit 34 detik | Total 30 epoch beserta validation per epoch |
 
 ## 25 November 2026
 
@@ -87,8 +100,12 @@ Evaluasi awal membandingkan 359 gambar Roboflow dengan 56 foto pribadi. Untuk ek
 
 Satu mask piring muncul dengan beberapa label pada COCO awal. Saya meninjau hasil audit anotasi dan menyetujui koreksi. Paket v2 memuat 430 mask pada 56 foto, termasuk 17 foto kondisi sulit. Evaluasi ulang memakai checkpoint terlatih dan selesai dalam total sekitar 9 menit 33 detik waktu worker L4. Notebook 06 membandingkan 31 kelas bersama dan mengganti kasus `v2_023` dengan `v2_029` karena label pada contoh sebelumnya perlu pemeriksaan. Uji ambang confidence memulihkan dua kasus dan menunjukkan peningkatan false positive. [Evaluasi v2](04_evaluasi_foto_pribadi_colab_v2.ipynb) · [Notebook analisis](06_analisis_foto_pribadi_colab_v2.ipynb) · [Laporan](ANALISIS_CPMK3.md)
 
+## Status demo
+
+Demo inferensi dan tanya jawab 10 menit telah dilaksanakan bersama dosen. Status dicatat pada 25 November 2026. [Notebook demo](07_inferensi_foto_baru_colab.ipynb)
+
 ## Tindak lanjut pengumpulan
 
-- Lampirkan EXIF/metadata dari berkas asli dan tautkan log training native dari Drive.
+- Lengkapi bukti EXIF untuk 12 foto yang berkas aslinya belum ditemukan. [Pemetaan dan metadata 56 foto](evidence/metadata-foto-mandiri.csv)
+- Pastikan dosen atau asisten dapat membuka log training yang ditautkan di atas, terutama log TensorBoard RF-DETR.
 - Tautkan bukti hipotesis asli sebelum training pertama jika tersedia.
-- Siapkan inferensi langsung untuk demo dan tanya jawab.
