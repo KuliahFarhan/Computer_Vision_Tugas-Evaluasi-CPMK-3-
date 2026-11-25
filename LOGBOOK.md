@@ -14,9 +14,9 @@ Saya membaca ketentuan tugas dan merencanakan perbandingan YOLO11, Mask R-CNN, d
 
 Saya memisahkan foto HP sebagai test set mandiri untuk melihat performa model pada ruangan dan kondisi pengambilan yang berbeda dari dataset sumber.
 
-**Hipotesis awal yang dicatat kembali pada 25 November 2026.** Berdasarkan perbedaan karakteristik arsitektur ketiga model, YOLO11s-seg dihipotesiskan memiliki efisiensi komputasi dan kecepatan inferensi terbaik. Mask R-CNN dihipotesiskan menghasilkan segmentasi objek yang lebih presisi daripada YOLO11s-seg melalui pendekatan two-stage dan RoIAlign. RF-DETR Seg Small dihipotesiskan memperoleh akurasi segmentasi keseluruhan dan kemampuan generalisasi terbaik melalui arsitektur Transformer dan pretrained backbone DINOv2.
+**Hipotesis awal yang didokumentasikan pada 25 November 2026.** Berdasarkan perbedaan karakteristik arsitektur ketiga model, YOLO11s-seg dihipotesiskan memiliki efisiensi komputasi dan kecepatan inferensi terbaik. Mask R-CNN dihipotesiskan menghasilkan segmentasi objek yang lebih presisi daripada YOLO11s-seg melalui pendekatan two-stage dan RoIAlign. RF-DETR Seg Small dihipotesiskan memperoleh akurasi segmentasi keseluruhan dan kemampuan generalisasi terbaik melalui arsitektur Transformer dan pretrained backbone DINOv2.
 
-**Bukti hipotesis.** Bukti pencatatan hipotesis sebelum training pertama dan prediksi untuk kelas tertentu masih perlu dilengkapi dari catatan asli jika tersedia.\
+**Waktu pencatatan.** Saya sudah memiliki asumsi tersebut sebelum training pertama dan baru menuliskannya secara retrospektif pada 25 November 2026. Rumusan yang terdokumentasi berfokus pada tingkat model.\
 **Rujukan** [Ketentuan tugas dan variabel NRP](README.md#23-variabel-eksperimen-berdasarkan-nrp).
 
 ### 16 November — Memulai training berdasarkan rancangan awal
@@ -31,7 +31,7 @@ Pada percobaan awal, pembuatan virtual environment gagal saat `ensurepip`. Setup
 
 Saya mengambil foto ruangan menggunakan kamera HP untuk test set mandiri. Salinan kerja awal berisi **44 foto**. Hasil tinjauan visual menandai **11 foto sulit** dan **33 foto normal**. Kondisi sulit yang dicatat mencakup cahaya redup, backlight, dan objek yang banyak tertutup.
 
-**Bukti** `dataset/foto-sendiri/photo_metadata.csv` di penyimpanan lokal. Kolom `exif_proof` masih kosong pada salinan ini. Bukti metadata perlu ditautkan dari foto asli.
+**Bukti** `dataset/foto-sendiri/photo_metadata.csv` mencatat kondisi pada salinan kerja awal. Bukti kamera untuk paket uji final tersedia pada [CSV EXIF 56 foto](evidence/metadata-foto-mandiri.csv).
 
 ### 20–21 November — Mengerjakan anotasi manual
 
@@ -51,7 +51,7 @@ Saya mengevaluasi dan meninjau hasil model dari run awal. Tabel berikut memakai 
 | Mask R-CNN ResNet-50 FPN | 16,08 | 7,15 |
 | RF-DETR Seg Nano | Inferensi validation gagal | Belum tersedia |
 
-Mask R-CNN memperoleh AP validation lebih tinggi, sedangkan YOLO11n-seg memperoleh AP original test lebih tinggi. Saya meninjau distribusi kelas sebagai salah satu kemungkinan penyebab selisih skor. Sebanyak 24 kelas yang muncul di train memiliki kurang dari 10 instance, dan 9 kelas terdaftar tidak muncul di train. Penyebab kegagalan per kelas masih perlu diperiksa dari prediksi dan metrik per kelas.
+Mask R-CNN memperoleh AP validation lebih tinggi, sedangkan YOLO11n-seg memperoleh AP original test lebih tinggi. Saya meninjau distribusi kelas sebagai salah satu kemungkinan penyebab selisih skor. Sebanyak 24 kelas yang muncul di train memiliki kurang dari 10 instance, dan 9 kelas terdaftar tidak muncul di train.
 
 **Bukti** [CSV evaluasi Kaggle](results/reports/comparison.csv) dan [distribusi kelas](results/reports/class_distribution.csv).
 
@@ -74,7 +74,7 @@ Saya menjalankan profil `quality` di Colab dengan GPU NVIDIA L4. Dataset tetap m
 | Mask R-CNN | `colab_quality02` | [training_log.csv](https://drive.google.com/file/d/1gmMSFbj-uzc-Bri4D-50K2n5qNd_wkyU/view?usp=drive_link) |
 | RF-DETR Seg Small | `colab_quality01` | [Log TensorBoard](https://drive.google.com/file/d/1BRpkx9Z3BTyCZO9CQ2NIeo-C_j4eSFZl/view?usp=drive_link) |
 
-Untuk YOLO, notebook menyalin `native/results.csv` menjadi `training_log.csv`. Kedua CSV `training_log.csv` dan berkas TensorBoard RF-DETR ditemukan di Drive. Akses penilai ke tautan tersebut masih perlu dipastikan.
+Untuk YOLO, notebook menyalin `native/results.csv` menjadi `training_log.csv`. Kedua CSV `training_log.csv` dan berkas TensorBoard RF-DETR dapat dibuka melalui tautan Drive di atas.
 
 ### Catatan durasi pada log
 
@@ -104,8 +104,6 @@ Satu mask piring muncul dengan beberapa label pada COCO awal. Saya meninjau hasi
 
 Demo inferensi dan tanya jawab 10 menit telah dilaksanakan bersama dosen. Status dicatat pada 25 November 2026. [Notebook demo](07_inferensi_foto_baru_colab.ipynb)
 
-## Tindak lanjut pengumpulan
+## Verifikasi EXIF foto uji
 
-- Lengkapi bukti EXIF untuk 12 foto yang berkas aslinya belum ditemukan. [Pemetaan dan metadata 56 foto](evidence/metadata-foto-mandiri.csv)
-- Pastikan dosen atau asisten dapat membuka log training yang ditautkan di atas, terutama log TensorBoard RF-DETR.
-- Tautkan bukti hipotesis asli sebelum training pertama jika tersedia.
+Seluruh 56 foto uji memiliki padanan berkas asli dengan EXIF dan checksum. Tag `DateTimeOriginal` pada berkas asli paket uji mencatat 24 November 2026. [Pemetaan dan metadata 56 foto](evidence/metadata-foto-mandiri.csv)

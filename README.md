@@ -197,12 +197,11 @@ Durasi pengerjaan yang tercantum pada PDF adalah **2 minggu**. Tanggal mulai, ta
 - [x] Menentukan tiga kelas tersulit dari validation dan membandingkan skenario sesuai NRP 5054241018.
 - [x] Menganalisis lima kegagalan dan menjalankan eksperimen confidence.
 - [x] Menyertakan durasi GPU, [logbook](LOGBOOK.md), dan deklarasi penggunaan AI.
-- [x] Menautkan log training ketiga model dan melampirkan [EXIF untuk 44 foto](evidence/metadata-foto-mandiri.csv).
-- [ ] Melengkapi EXIF untuk 12 foto yang padanan berkas aslinya belum ditemukan jika tersedia.
-- [ ] Menautkan catatan hipotesis sebelum training pertama jika tersedia.
+- [x] Menautkan log training ketiga model dan melampirkan [EXIF untuk seluruh 56 foto](evidence/metadata-foto-mandiri.csv).
+- [ ] Mendokumentasikan hipotesis sebelum training pertama. Rumusan awal baru dituliskan secara retrospektif pada 25 November 2026.
 - [x] Melaksanakan demo inferensi dan tanya jawab 10 menit bersama dosen. [Notebook demo](07_inferensi_foto_baru_colab.ipynb)
 
-Rincian status dan bukti ada di [laporan analisis](ANALISIS_CPMK3.md).
+Hasil dan tautan bukti pengumpulan tersedia di [laporan PDF](LAPORAN_CPMK3.pdf), [analisis](ANALISIS_CPMK3.md), dan [logbook](LOGBOOK.md).
 
 ## 4. Peta sumber dalam PDF
 

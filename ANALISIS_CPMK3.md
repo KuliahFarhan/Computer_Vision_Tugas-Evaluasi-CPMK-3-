@@ -130,13 +130,13 @@ Prediksi tersimpan dihitung ulang dengan confidence **0,25** dan **0,05**. Pada 
 
 Durasi Mask R-CNN `all_classes` adalah jumlah waktu 30 epoch dalam log `colab_quality02`. Kolom lain menggunakan durasi worker yang dicetak notebook, termasuk persiapan dan evaluasi yang dilakukan worker. Total waktu worker `hard3` sekitar **53 m 30 d** dan evaluasi kedua test set sekitar **9 m 33 d**. Riwayat sesi meliputi kendala resume CUDA pada percobaan Mask R-CNN sebelumnya dan keputusan menjalankan ulang model itu dengan label baru. [Colab sesi 1](results/colab/colab_quality01_session1.ipynb) · [Colab sesi 2](results/colab/colab_quality01_session2.ipynb) · [Mask R-CNN quality02](results/colab/colab_quality02_maskrcnn.ipynb) · [Logbook](LOGBOOK.md)
 
-Log training skenario semua kelas tersedia sebagai CSV untuk YOLO11s-seg (`colab_quality01`) dan Mask R-CNN (`colab_quality02`), serta berkas TensorBoard untuk RF-DETR Seg Small (`colab_quality01`). Ketiga berkas ditemukan di Drive. Akses penilai ke tautan masih perlu dipastikan. [CSV YOLO](https://drive.google.com/file/d/1IAhz5Iw1eeHmef0u75kyz18VEOrBl2cC/view?usp=drive_link) · [CSV Mask R-CNN](https://drive.google.com/file/d/1gmMSFbj-uzc-Bri4D-50K2n5qNd_wkyU/view?usp=drive_link) · [TensorBoard RF-DETR](https://drive.google.com/file/d/1BRpkx9Z3BTyCZO9CQ2NIeo-C_j4eSFZl/view?usp=drive_link) · [Riwayat commit](https://github.com/KuliahFarhan/Computer_Vision_Tugas-Evaluasi-CPMK-3-/commits)
+Log training skenario semua kelas tersedia sebagai CSV untuk YOLO11s-seg (`colab_quality01`) dan Mask R-CNN (`colab_quality02`), serta berkas TensorBoard untuk RF-DETR Seg Small (`colab_quality01`). Ketiga berkas dapat dibuka melalui tautan Drive berikut. [CSV YOLO](https://drive.google.com/file/d/1IAhz5Iw1eeHmef0u75kyz18VEOrBl2cC/view?usp=drive_link) · [CSV Mask R-CNN](https://drive.google.com/file/d/1gmMSFbj-uzc-Bri4D-50K2n5qNd_wkyU/view?usp=drive_link) · [TensorBoard RF-DETR](https://drive.google.com/file/d/1BRpkx9Z3BTyCZO9CQ2NIeo-C_j4eSFZl/view?usp=drive_link) · [Riwayat commit](https://github.com/KuliahFarhan/Computer_Vision_Tugas-Evaluasi-CPMK-3-/commits)
 
-### 6.2 Hipotesis bertanggal dan bukti foto
+### 6.2 Pencatatan hipotesis dan bukti foto
 
-Hipotesis awal memperkirakan YOLO11s-seg paling efisien, Mask R-CNN menghasilkan mask yang lebih presisi daripada YOLO11s-seg, dan RF-DETR Seg Small unggul dalam akurasi segmentasi dan generalisasi. RF-DETR memperoleh Mask AP tertinggi pada kedua test set. Mask AP agregat Mask R-CNN berada di bawah YOLO11s-seg pada kedua test set, sedangkan presisi batas mask memerlukan metrik tersendiri. Durasi worker mencakup lebih dari inferensi, sehingga kecepatan inferensi memerlukan pengukuran dengan protokol yang sama. Hipotesis dicatat kembali pada 25 November. Bukti pencatatan sebelum training pertama dan prediksi untuk kelas tertentu masih perlu dilengkapi jika tersedia. [Logbook](LOGBOOK.md)
+Hipotesis awal memperkirakan YOLO11s-seg paling efisien, Mask R-CNN menghasilkan mask yang lebih presisi daripada YOLO11s-seg, dan RF-DETR Seg Small unggul dalam akurasi segmentasi dan generalisasi. RF-DETR memperoleh Mask AP tertinggi pada kedua test set. Mask AP agregat Mask R-CNN berada di bawah YOLO11s-seg pada kedua test set, sedangkan presisi batas mask memerlukan metrik tersendiri. Durasi worker mencakup lebih dari inferensi, sehingga kecepatan inferensi memerlukan pengukuran dengan protokol yang sama. Asumsi sudah ada sebelum training pertama dan baru didokumentasikan secara retrospektif pada 25 November 2026. Rumusan yang terdokumentasi memuat dugaan pada tingkat model. [Logbook](LOGBOOK.md)
 
-Screenshot Roboflow memperlihatkan mask dan label pada foto `indoor_5054241018_013.jpeg` di editor. Metadata seleksi mencatat status kondisi sulit pada 56 foto. Setelah foto uji dicocokkan dengan isi folder foto asli, **44 dari 56 foto** memiliki pasangan unik dengan model kamera **motorola moto g45 5G** dan tanggal pemotretan **24 November 2026** pada tag EXIF `DateTimeOriginal`. Sebanyak 13 dari 17 foto sulit termasuk dalam kelompok terverifikasi. Dua belas foto lainnya belum ditemukan padanannya di folder asli yang diperiksa. [Screenshot anotasi](evidence/bukti-anotasi-roboflow.png) · [Pemetaan foto dan metadata EXIF](evidence/metadata-foto-mandiri.csv)
+Screenshot Roboflow memperlihatkan mask dan label pada foto `indoor_5054241018_013.jpeg` di editor. Seluruh **56 foto uji**, termasuk **17 foto sulit**, memiliki padanan berkas asli yang unik. EXIF pada berkas asli mencatat kamera **Motorola moto g45 5G** dan tanggal pemotretan **24 November 2026** pada tag `DateTimeOriginal`. [Screenshot anotasi](evidence/bukti-anotasi-roboflow.png) · [Pemetaan foto dan metadata EXIF](evidence/metadata-foto-mandiri.csv)
 
 ### 6.3 Deklarasi penggunaan AI
 
@@ -152,15 +152,15 @@ Salah satu kesalahan konkret terjadi pada Notebook 04 awal. Kode memperlakukan C
 
 ## 7. Status pengumpulan
 
-| Ketentuan | Status | Bukti atau bagian yang perlu dilengkapi |
+| Ketentuan | Status | Bukti |
 |---|---|---|
 | Menyiapkan Panoptic Indoor Segmentation v5 | Selesai | Split 397/166/359, audit, dan normalisasi tercatat. |
 | Minimal tiga model dari dua keluarga | Selesai | YOLO11s-seg, Mask R-CNN, RF-DETR Seg Small. |
 | Minimal 40 foto ruangan dari HP sendiri | Selesai | 56 foto pada manifest dan COCO foto pribadi. |
 | Minimal 10 foto kondisi sulit | Selesai | 17 dari 56 terverifikasi lewat metadata seleksi. |
 | Anotasi sendiri di Roboflow dan kelas konsisten | Paket evaluasi tersedia | Screenshot proses tersedia. Paket COCO selaras dengan 74 ID kelas training. Metode manual dan bantuan AI dicatat. |
-| Screenshot anotasi dan EXIF/metadata asli | Sebagian | Screenshot tersedia. EXIF terverifikasi untuk 44 foto, dengan 12 foto yang masih memerlukan berkas asli. |
-| Training dan log asli | Selesai, akses penilai perlu dicek | Kedua CSV dan berkas TensorBoard RF-DETR ditemukan di Drive. Tautan tercantum pada §6.1. |
+| Screenshot anotasi dan EXIF/metadata asli | Selesai | Screenshot tersedia. EXIF terverifikasi untuk seluruh 56 foto, termasuk 17 foto sulit. |
+| Training dan log asli | Selesai | Kedua CSV dan berkas TensorBoard RF-DETR dapat dibuka melalui tautan di §6.1. |
 | Evaluasi kedua test set | Selesai | Ketiga worker evaluasi selesai. |
 | Analisis domain shift | Selesai | Mask AP pada 31 kelas bersama dengan penjelasan keterbatasan. |
 | Memilih tiga kelas sulit dan mencatat dasarnya | Selesai | Ranking AP validation dan dukungan train/validation. |
@@ -169,6 +169,6 @@ Salah satu kesalahan konkret terjadi pada Notebook 04 awal. Kode memperlakukan C
 | Menjelaskan kegagalan berdasarkan mekanisme | Selesai di laporan | Observasi, kemungkinan mekanisme, dan batas inferensi pada §5. |
 | Eksperimen kecil dan hasil | Selesai | Confidence 0,25 dibanding 0,05, pada lima kasus dan 56 foto. |
 | Waktu GPU dan logbook | Selesai | Durasi tercantum pada §6.1 dan logbook mencatat eksperimen serta keputusan. |
-| Hipotesis sebelum training pertama | Hipotesis dicatat, bukti tanggal belum ditemukan | Logbook mencatat rumusan hipotesis pada 25 November. Bukti awal dan prediksi per kelas masih perlu dilengkapi. |
+| Hipotesis tertulis sebelum training pertama | Belum terpenuhi | Asumsi awal didokumentasikan secara retrospektif pada 25 November 2026. |
 | Deklarasi AI, prompt, dan contoh perbaikan | Selesai di laporan | Tiga prompt dan contoh koreksi kode dicatat pada §6.3. |
 | Demo dan tanya jawab 10 menit | Selesai | Demo telah dilaksanakan bersama dosen berdasarkan konfirmasi mahasiswa. [Notebook demo](07_inferensi_foto_baru_colab.ipynb) |

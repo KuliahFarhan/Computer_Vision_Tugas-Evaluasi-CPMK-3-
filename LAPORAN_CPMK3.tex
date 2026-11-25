@@ -9,7 +9,7 @@
 }
 \usepackage[a4paper,left=19mm,right=19mm,top=20mm,bottom=18mm]{geometry}
 \usepackage[table]{xcolor}
-\usepackage{graphicx,booktabs,tabularx,array,caption,enumitem,titlesec}
+\usepackage{graphicx,booktabs,tabularx,array,caption,enumitem,titlesec,multicol}
 \usepackage{hyperref}
 \usepackage{embedfile}
 
@@ -34,6 +34,8 @@
 \graphicspath{{evidence/}{evidence/figures/}}
 \newcommand{\code}[1]{\textnormal{\detokenize{#1}}}
 \newcommand{\repofile}[2]{\href{https://github.com/KuliahFarhan/Computer_Vision_Tugas-Evaluasi-CPMK-3-/blob/main/#1}{#2}}
+\newcommand{\buktiref}[1]{\hyperlink{bukti-#1}{[#1]}}
+\newcommand{\bukti}[2]{\par\noindent\hangindent=2.1em\hangafter=1\hypertarget{bukti-#1}{\makebox[2.1em][l]{[#1]}}#2\par}
 \newcommand{\reportfig}[3]{%
   \begin{minipage}{\linewidth}\centering
     \includegraphics[width=#1]{#2}\par
@@ -58,7 +60,7 @@
 
 \section{Dataset dan data uji mandiri}
 
-Eksperimen ini menggunakan \href{https://universe.roboflow.com/panopticindoor/panoptic-indoor-segmentation}{Panoptic Indoor Segmentation v5} sebagai data latih. Evaluasi membandingkan tiga model pada data uji Roboflow dan foto ruangan yang diambil secara mandiri. RF-DETR Seg Small memperoleh Mask AP tertinggi pada kedua data uji.
+Eksperimen ini menggunakan Panoptic Indoor Segmentation v5~\buktiref{1} sebagai data latih. Evaluasi membandingkan tiga model pada data uji Roboflow dan foto ruangan yang diambil secara mandiri. RF-DETR Seg Small memperoleh Mask AP tertinggi pada kedua data uji.
 
 \begin{tabularx}{\linewidth}{@{}YrrY@{}}
 \toprule
@@ -75,6 +77,8 @@ Foto mandiri & 56 & 31 & Evaluasi pada foto HP, 430 mask COCO \\
 Data uji mandiri terdiri dari \textbf{56 foto ruangan} yang diambil dengan kamera ponsel. Sebanyak \textbf{17 foto} diambil dalam kondisi sulit, seperti pencahayaan redup, \textit{backlight}, atau objek yang saling menutupi. Anotasi dilakukan di Roboflow dengan bantuan Mask2Former dan Grounding DINO + SAM, disertai pemeriksaan kesesuaian label dan duplikasi mask.
 
 Sebelum evaluasi, nama dan dimensi foto dicocokkan dengan anotasi COCO. Kategori setiap mask diperiksa terhadap pemetaan kelas model. Seluruh foto mandiri digunakan sebagai data uji. Rincian EXIF tercantum pada bagian bukti proses.
+
+Bukti mencakup foto uji~\buktiref{2}, daftar kondisi~\buktiref{3}, dan screenshot anotasi~\buktiref{4}.
 
 \reportfig{\linewidth}{foto-kondisi-sulit.jpg}{Empat contoh kondisi sulit dari foto mandiri. Nomor mengacu pada nama file foto yang dipakai dalam evaluasi.}
 
@@ -94,7 +98,7 @@ RF-DETR Seg Small & Detection Transformer dengan segmentation head & \code{colab
 \bottomrule
 \end{tabularx}
 
-Evaluasi menggunakan COCO Mask AP50–95, yaitu rata-rata AP segmentasi pada sepuluh ambang Mask IoU dari 0,50 hingga 0,95. Mask AP50 menggunakan ambang IoU 0,50. \href{https://github.com/cocodataset/cocoapi/blob/master/PythonAPI/pycocotools/cocoeval.py}{Evaluator COCO} · \repofile{04_evaluasi_foto_pribadi_colab_v2.ipynb}{Notebook evaluasi}
+Evaluasi menggunakan COCO Mask AP50–95, yaitu rata-rata AP segmentasi pada sepuluh ambang Mask IoU dari 0,50 hingga 0,95. Mask AP50 menggunakan ambang IoU 0,50. Lihat evaluator COCO~\buktiref{5} dan notebook evaluasi~\buktiref{6}.
 
 Mask IoU mengukur rasio luas irisan terhadap luas gabungan mask prediksi dan ground truth. Evaluator mengurutkan prediksi berdasarkan confidence. Ambang IoU yang lebih tinggi menuntut kesesuaian bentuk dan batas mask yang lebih baik. Ketiga checkpoint dinilai dengan prosedur yang sama.
 
@@ -134,12 +138,12 @@ Pada kelas yang memiliki \textit{ground truth} di kedua data uji, ketiga model m
 
 Pada 31 kelas bersama, median luas mask terhadap luas foto adalah \textbf{4,34\%} pada foto mandiri dan \textbf{1,71\%} pada Roboflow. Nilai ini dihitung dari luas mask \textit{ground truth} setelah rasterisasi. Median jumlah mask beranotasi per foto adalah \textbf{5} pada foto mandiri dan \textbf{7} pada Roboflow.
 
-Objek yang lebih besar cenderung lebih mudah disegmentasi karena detail kontur lebih terlihat dan kesalahan batas berdampak lebih kecil pada IoU. Pengaruh ukuran, susunan objek, pencahayaan, dan anotasi belum diuji secara terpisah. \repofile{06_analisis_foto_pribadi_colab_v2.ipynb}{Notebook analisis}
+Objek yang lebih besar cenderung lebih mudah disegmentasi karena detail kontur lebih terlihat dan kesalahan batas berdampak lebih kecil pada IoU. Pengaruh ukuran, susunan objek, pencahayaan, dan anotasi belum diuji secara terpisah. Lihat notebook analisis~\buktiref{7}.
 
 \clearpage
 \subsection{Perbandingan visual pada foto mandiri}
 
-Dua foto uji memperlihatkan mask dan label \textit{ground truth} berdampingan dengan prediksi ketiga model pada confidence minimal 0,25. Angka pada panel menunjukkan jumlah mask \textit{ground truth} yang mendapat pasangan dengan label sama dan Mask IoU minimal 0,50. Satu label pada gambar dapat mewakili beberapa mask sekelas.
+Dua foto uji memperlihatkan mask dan label \textit{ground truth} berdampingan dengan prediksi ketiga model pada confidence minimal 0,25. Angka pada panel menunjukkan jumlah mask \textit{ground truth} yang mendapat pasangan dengan label sama dan Mask IoU minimal 0,50. Satu label dapat mewakili beberapa mask sekelas. Lihat arsip prediksi~\buktiref{8}.
 
 \reportfig{0.79\linewidth}{perbandingan-foto-mandiri-normal.png}{Foto normal 029. Tas terlewat pada ketiga model. RF-DETR mencocokkan kursi, lantai, dan dinding.}
 
@@ -161,7 +165,7 @@ Digit terakhir NRP, yaitu \textbf{8}, menetapkan eksperimen yang membandingkan p
 \bottomrule
 \end{tabularx}
 
-Skenario \code{hard3} menggunakan 397 gambar latih dengan label yang dibatasi pada tiga kelas terpilih. Sebanyak 55 gambar memuat objek target, dengan total 101 instance. Ketiga kelas ditetapkan dari data validasi sebelum hasil pada data uji dihitung. Perbandingan kedua skenario menggunakan 359 gambar uji Roboflow dan tiga kelas yang sama. \repofile{05_eksperimen_hard3_colab.ipynb}{Peringkat kelas dan log eksperimen NRP}
+Skenario \code{hard3} menggunakan 397 gambar latih dengan label yang dibatasi pada tiga kelas terpilih. Sebanyak 55 gambar memuat objek target, dengan total 101 instance. Ketiga kelas ditetapkan dari data validasi sebelum hasil pada data uji dihitung. Perbandingan kedua skenario menggunakan 359 gambar uji Roboflow dan tiga kelas yang sama. Lihat eksperimen NRP~\buktiref{9}.
 
 \begin{tabularx}{\linewidth}{@{}Yrrr@{}}
 \toprule
@@ -183,7 +187,9 @@ AP YOLO dan Mask R-CNN menurun pada skenario tiga kelas. RF-DETR naik 0,19 poin 
 
 Hipotesis awal memperkirakan YOLO11s-seg unggul dalam efisiensi dan kecepatan inferensi. Mask R-CNN diperkirakan menghasilkan mask yang lebih presisi melalui pendekatan two-stage dan RoIAlign. RF-DETR Seg Small diperkirakan unggul dalam akurasi segmentasi dan generalisasi melalui arsitektur Transformer dengan pretrained backbone DINOv2.
 
-RF-DETR memperoleh Mask AP tertinggi pada kedua test set. Mask AP Mask R-CNN berada di bawah YOLO11s-seg pada kedua test set. Presisi batas mask dan kecepatan inferensi memerlukan pengukuran khusus. Hipotesis dicatat kembali dalam logbook pada 25 November. Bukti pencatatan sebelum pelatihan pertama dan prediksi untuk kelas tertentu masih perlu dilengkapi. \repofile{LOGBOOK.md}{Logbook dan catatan hipotesis}
+RF-DETR memperoleh Mask AP tertinggi pada kedua test set. Mask AP Mask R-CNN berada di bawah YOLO11s-seg pada kedua test set. Presisi batas mask dan kecepatan inferensi memerlukan pengukuran khusus.
+
+Asumsi tersebut sudah ada sebelum pelatihan pertama dan baru didokumentasikan secara retrospektif pada 25 November 2026. Rumusan yang terdokumentasi memuat dugaan pada tingkat model. Lihat logbook~\buktiref{10}.
 
 \clearpage
 \section{Studi kasus kegagalan}
@@ -227,25 +233,25 @@ RF-DETR Seg Small & 270→333 & 472→3740 & 160→97 & 36,4→8,2 & 62,8→77,4
 \end{tabularx}
 }
 
-Ambang yang lebih rendah menghasilkan prediksi yang sesuai pada \textbf{dua dari lima kasus}. Recall meningkat untuk seluruh model dan precision menurun. Pada RF-DETR, terdapat tambahan 63 true positive dan 3.268 false positive. Prediksi salah kelas masih dapat terhitung sebagai false positive meskipun kandidat lain cocok dengan ground truth pada objek yang sama. Hasil ini menunjukkan bahwa ambang rendah memperluas cakupan deteksi dengan konsekuensi lebih banyak prediksi yang perlu disaring. Pengujian ini terbatas pada mask yang sudah diekspor. \repofile{06_analisis_foto_pribadi_colab_v2.ipynb}{Panel dan tabel eksperimen}
+Ambang yang lebih rendah menghasilkan prediksi yang sesuai pada \textbf{dua dari lima kasus}. Recall meningkat untuk seluruh model dan precision menurun. Pada RF-DETR, terdapat tambahan 63 true positive dan 3.268 false positive. Prediksi salah kelas masih dapat terhitung sebagai false positive meskipun kandidat lain cocok dengan ground truth pada objek yang sama. Hasil ini menunjukkan bahwa ambang rendah memperluas cakupan deteksi dengan konsekuensi lebih banyak prediksi yang perlu disaring. Pengujian ini terbatas pada mask yang sudah diekspor. Lihat notebook analisis~\buktiref{7}.
 
-{\footnotesize Rujukan arsitektur. \href{https://docs.ultralytics.com/reference/nn/modules/head/#ultralytics.nn.modules.head.Segment}{YOLO segmentation head} · \href{https://openaccess.thecvf.com/content_iccv_2017/html/He_Mask_R-CNN_ICCV_2017_paper.html}{Mask R-CNN} · \href{https://arxiv.org/abs/2511.09554}{RF-DETR}.}
+{\footnotesize Rujukan arsitektur. YOLO~\buktiref{11}, Mask R-CNN~\buktiref{12}, dan RF-DETR~\buktiref{13}.}
 
 \clearpage
 \section{Bukti proses}
 
 \subsection{Metadata foto dan log training}
 
-Sebanyak \textbf{44 dari 56 foto} terverifikasi memiliki pasangan berkas asli, termasuk \textbf{13 dari 17 foto kondisi sulit}. Metadata EXIF mencatat kamera \textbf{Motorola moto g45 5G} dan tanggal \textbf{24 November 2026}. Pasangan berkas asli untuk 12 foto lainnya belum ditemukan pada folder yang diperiksa. Pemetaan foto dan checksum tersedia pada lampiran PDF \code{metadata-foto-mandiri.csv}.
+Seluruh \textbf{56 foto uji}, termasuk \textbf{17 foto kondisi sulit}, telah dicocokkan dengan berkas asli. Metadata EXIF mencatat kamera \textbf{Motorola moto g45 5G} dan tanggal pemotretan \textbf{24 November 2026}. Pemetaan foto dan checksum tersedia pada lampiran PDF \code{metadata-foto-mandiri.csv} dan CSV EXIF~\buktiref{14}.
 
 {\small
 \begin{tabularx}{\linewidth}{@{}lYl@{}}
 \toprule
 \textbf{Foto uji} & \textbf{Berkas asli} & \textbf{EXIF DateTimeOriginal} \\
 \midrule
-001 & \code{IMG_20261124_112524385.jpg} & 24 Nov 2026, 11:25:24 \\
-017 & \code{IMG_20261124_111813540.jpg} & 24 Nov 2026, 11:18:14 \\
-039 & \code{IMG_20261124_111123282.jpg} & 24 Nov 2026, 11:11:23 \\
+001 & \code{IMG_20261124_112524385 (1).jpg} & 24 Nov 2026, 11:25:24 \\
+017 & \code{IMG_20261124_111813540 (1).jpg} & 24 Nov 2026, 11:18:14 \\
+039 & \code{IMG_20261124_111123282 (1).jpg} & 24 Nov 2026, 11:11:23 \\
 \bottomrule
 \end{tabularx}
 }
@@ -264,18 +270,11 @@ Evaluasi kedua test set & 2 m 58 d & 4 m 17 d & 2 m 17 d \\
 {\footnotesize m = menit dan d = detik. Waktu training Mask R-CNN merupakan jumlah 30 epoch. Entri lain memakai waktu worker.}\par
 Log pelatihan semua kelas mencakup YOLO11s-seg dan RF-DETR Seg Small pada \code{colab_quality01}, serta Mask R-CNN pada \code{colab_quality02}. Logbook mencatat kendala pemulihan CUDA dan keputusan mengulang pelatihan Mask R-CNN.
 
-\subsection{Tautan Bukti}
-
-{\small
-\textbf{Data uji.} \repofile{evidence/bukti-anotasi-roboflow.png}{Screenshot anotasi Roboflow} · \repofile{evidence/metadata-foto-mandiri.csv}{CSV metadata EXIF} · \href{https://github.com/KuliahFarhan/Computer_Vision_Tugas-Evaluasi-CPMK-3-/tree/main/results/anotasi-foto-pribadi}{Prediksi ketiga model}\par
-\textbf{Log pelatihan.} \href{https://drive.google.com/file/d/1IAhz5Iw1eeHmef0u75kyz18VEOrBl2cC/view?usp=drive_link}{CSV YOLO} · \href{https://drive.google.com/file/d/1gmMSFbj-uzc-Bri4D-50K2n5qNd_wkyU/view?usp=drive_link}{CSV Mask R-CNN} · \href{https://drive.google.com/file/d/1BRpkx9Z3BTyCZO9CQ2NIeo-C_j4eSFZl/view?usp=drive_link}{TensorBoard RF-DETR} · \repofile{results/colab/colab_quality01_session2.ipynb}{Notebook RF-DETR}\par
-\textbf{Dokumentasi.} \href{https://github.com/KuliahFarhan/Computer_Vision_Tugas-Evaluasi-CPMK-3-}{Repositori GitHub} · \href{https://github.com/KuliahFarhan/Computer_Vision_Tugas-Evaluasi-CPMK-3-/commits}{Riwayat commit} · \repofile{LOGBOOK.md}{Logbook} · \repofile{ANALISIS_CPMK3.md\#63-deklarasi-penggunaan-ai}{Prompt asli dan deklarasi AI}\par
-\textbf{Demo.} Demo dan tanya jawab 10 menit telah dilaksanakan bersama dosen. \repofile{07_inferensi_foto_baru_colab.ipynb}{Notebook demo}\par
-}
+Bukti pelatihan mencakup log YOLO~\buktiref{15}, log Mask R-CNN~\buktiref{16}, TensorBoard RF-DETR~\buktiref{17}, dan notebook RF-DETR~\buktiref{18}. Dokumentasi tersedia di repositori GitHub~\buktiref{19} dan riwayat commit~\buktiref{20}. Demo dan tanya jawab 10 menit telah dilaksanakan bersama dosen. Lihat notebook demo~\buktiref{21}.
 
 \subsection{Deklarasi penggunaan AI}
 
-AI digunakan untuk membantu menyiapkan notebook, memeriksa kode dan label, serta menyusun laporan. Tiga prompt utama diringkas sebagai berikut.
+AI digunakan untuk membantu menyiapkan notebook, memeriksa kode dan label, serta menyusun laporan. Tiga prompt utama diringkas di bawah ini. Lihat prompt asli~\buktiref{22}.
 
 \begin{itemize}
 \item Menyiapkan notebook Colab untuk menguji ketiga model pada foto pribadi.
@@ -284,5 +283,35 @@ AI digunakan untuk membantu menyiapkan notebook, memeriksa kode dan label, serta
 \end{itemize}
 
 \textbf{Contoh koreksi.} Notebook evaluasi memunculkan \code{FileNotFoundError} karena kode yang disarankan AI mewajibkan CSV metadata. Foto dan COCO sudah dapat dibaca. Perbaikannya menjadikan CSV opsional untuk evaluasi serta mencatat status bukti yang belum ditemukan.
+
+\section*{Referensi dan Bukti}
+\begingroup
+\small
+\setlength{\parskip}{2pt}
+\begin{multicols}{2}
+\bukti{1}{\href{https://universe.roboflow.com/panopticindoor/panoptic-indoor-segmentation}{Panoptic Indoor Segmentation v5}}
+\bukti{2}{\href{https://drive.google.com/drive/folders/1hDHNcZQy2UywUaTo6yZb6MNJIsjYM0P5?usp=sharing}{Folder Drive berisi 56 foto uji mandiri}}
+\bukti{3}{\href{https://drive.google.com/file/d/1VCekCWCassq1xIc3idabYUup1q9MZqMF/view}{Daftar kondisi foto}}
+\bukti{4}{\repofile{evidence/bukti-anotasi-roboflow.png}{Screenshot proses anotasi di Roboflow}}
+\bukti{5}{\href{https://github.com/cocodataset/cocoapi/blob/master/PythonAPI/pycocotools/cocoeval.py}{Kode evaluator COCO}}
+\bukti{6}{\repofile{04_evaluasi_foto_pribadi_colab_v2.ipynb}{Notebook evaluasi kedua data uji}}
+\bukti{7}{\repofile{06_analisis_foto_pribadi_colab_v2.ipynb}{Notebook domain shift dan studi kegagalan}}
+\bukti{8}{\href{https://github.com/KuliahFarhan/Computer_Vision_Tugas-Evaluasi-CPMK-3-/tree/main/results/anotasi-foto-pribadi}{Arsip prediksi ketiga model pada foto uji}}
+\bukti{9}{\repofile{05_eksperimen_hard3_colab.ipynb}{Notebook eksperimen tiga kelas tersulit}}
+\bukti{10}{\repofile{LOGBOOK.md}{Logbook dan catatan hipotesis}}
+\bukti{11}{\href{https://docs.ultralytics.com/reference/nn/modules/head/\#ultralytics.nn.modules.head.Segment}{Dokumentasi segmentation head YOLO}}
+\bukti{12}{\href{https://openaccess.thecvf.com/content_iccv_2017/html/He_Mask_R-CNN_ICCV_2017_paper.html}{Makalah Mask R-CNN}}
+\bukti{13}{\href{https://arxiv.org/abs/2511.09554}{Makalah RF-DETR}}
+\bukti{14}{\href{https://drive.google.com/file/d/1fsc1fJzak0aYkRnkx691VL0ZNOwWWo1r/view?usp=drive_link}{CSV metadata EXIF 56 foto di Drive}}
+\bukti{15}{\href{https://drive.google.com/file/d/1IAhz5Iw1eeHmef0u75kyz18VEOrBl2cC/view?usp=drive_link}{CSV log pelatihan YOLO}}
+\bukti{16}{\href{https://drive.google.com/file/d/1gmMSFbj-uzc-Bri4D-50K2n5qNd_wkyU/view?usp=drive_link}{CSV log pelatihan Mask R-CNN}}
+\bukti{17}{\href{https://drive.google.com/file/d/1BRpkx9Z3BTyCZO9CQ2NIeo-C_j4eSFZl/view?usp=drive_link}{Log TensorBoard RF-DETR}}
+\bukti{18}{\repofile{results/colab/colab_quality01_session2.ipynb}{Notebook pelatihan RF-DETR}}
+\bukti{19}{\href{https://github.com/KuliahFarhan/Computer_Vision_Tugas-Evaluasi-CPMK-3-}{Repositori proyek di GitHub}}
+\bukti{20}{\href{https://github.com/KuliahFarhan/Computer_Vision_Tugas-Evaluasi-CPMK-3-/commits}{Riwayat commit proyek}}
+\bukti{21}{\repofile{07_inferensi_foto_baru_colab.ipynb}{Notebook demo inferensi foto baru}}
+\bukti{22}{\repofile{ANALISIS_CPMK3.md\#63-deklarasi-penggunaan-ai}{Prompt asli dan deklarasi penggunaan AI}}
+\end{multicols}
+\endgroup
 
 \end{document}
