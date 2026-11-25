@@ -8,7 +8,7 @@
 | Dosen pada materi | Anny Yuniarti |
 | Sumber | [10 - Segmentasi Instance dengan Deep Learning.pdf](<10 - Segmentasi Instance dengan Deep Learning.pdf>) |
 
-README ini menuliskan kembali materi perkuliahan dan ketentuan tugas dari PDF. Ringkasan materi mengacu pada halaman 1–28, sedangkan ketentuan Evaluasi CPMK 3 mengacu pada halaman 29–32. Dokumen ini merupakan catatan materi dan panduan pengerjaan; hasil eksperimen belum dicantumkan.
+README ini menuliskan kembali materi perkuliahan dan ketentuan tugas dari PDF. Ringkasan materi mengacu pada halaman 1–28, sedangkan ketentuan Evaluasi CPMK 3 mengacu pada halaman 29–32. Hasil evaluasi, eksperimen NRP, dan lima studi kasus tersedia di [Analisis CPMK 3](ANALISIS_CPMK3.md).
 
 ## 1. Ringkasan materi
 
@@ -151,9 +151,7 @@ Digit terakhir NRP menentukan variabel yang wajib diselidiki:
 
 **NRP 5054241018 berakhir dengan digit 8. Jadi, eksperimen wajib untuk tugas ini adalah membandingkan skenario hanya 3 kelas tersulit dengan skenario semua kelas.**
 
-Nama ketiga kelas belum dapat ditentukan sebelum analisis awal dilakukan. Pemilihannya harus disertai bukti analisis, bukan berdasarkan perkiraan semata.
-
-Sebagai panduan pelaksanaan tambahan, analisis awal dapat menggunakan performa per kelas pada data validasi untuk memilih tiga kelas tersulit. Catat dasar pemilihan kelas dan perbedaan konfigurasi kedua skenario agar perbandingannya dapat ditelusuri. Cara pemilihan ini adalah saran pengerjaan; slide hanya mewajibkan pemilihan dari analisis awal.
+Tiga kelas terpilih adalah `cabinet-merged`, `blanket`, dan `rug-merged`. Pemilihan memakai rata-rata Mask AP validation dan mensyaratkan dukungan minimal lima gambar pada train serta validation. [Eksperimen NRP](05_eksperimen_hard3_colab.ipynb)
 
 ### 2.4. Analisis kegagalan berbasis bukti
 
@@ -181,7 +179,7 @@ Penyusunan ringkasan README ini dibantu AI berdasarkan PDF yang disediakan. Prom
 
 > oke coba anda baca [10 - Segmentasi Instance dengan Deep Learning.pdf] nanti tolong tulis ulang apa materinya di readme dan apa tugasnya di readme juga, saya nrp 5054241018
 
-Deklarasi dan lampiran prompt perlu dilengkapi sesuai penggunaan AI selama implementasi. Kasus kesalahan atau ketidakcocokan saran AI beserta perbaikannya perlu didokumentasikan dari kejadian yang benar-benar terjadi.
+Deklarasi penggunaan AI, tiga prompt utama, dan contoh perbaikan kode tersedia di [Analisis CPMK 3](ANALISIS_CPMK3.md).
 
 ### 2.7. Durasi pengerjaan
 
@@ -189,25 +187,21 @@ Durasi pengerjaan yang tercantum pada PDF adalah **2 minggu**. Tanggal mulai, ta
 
 ## 3. Checklist pengerjaan
 
-Checklist berikut merangkum kewajiban tugas. Semua kotak masih kosong karena README ini belum melaporkan penyelesaian eksperimen.
+- [x] Menyiapkan Panoptic Indoor Segmentation v5 sebagai data latih.
+- [x] Memilih tiga model dari lebih dari satu keluarga arsitektur.
+- [x] Mengambil 56 foto ruangan nyata dengan kamera HP, termasuk 17 foto kondisi sulit.
+- [x] Menyiapkan dan mengaudit COCO foto pribadi dengan kelas training.
+- [x] Melampirkan [screenshot proses anotasi di Roboflow](evidence/bukti-anotasi-roboflow.png).
+- [x] Melatih ketiga model dan mengarsipkan notebook dengan output training.
+- [x] Mengevaluasi test Roboflow dan foto mandiri serta menganalisis domain shift pada 31 kelas bersama.
+- [x] Menentukan tiga kelas tersulit dari validation dan membandingkan skenario sesuai NRP 5054241018.
+- [x] Menganalisis lima kegagalan dan menjalankan eksperimen confidence.
+- [x] Menyertakan durasi GPU, [logbook](LOGBOOK.md), dan deklarasi penggunaan AI.
+- [ ] Melampirkan EXIF dari foto asli dan menautkan arsip log training native dari Drive.
+- [ ] Menautkan catatan hipotesis sebelum training pertama jika tersedia.
+- [ ] Menyiapkan demo inferensi foto baru dan sesi tanya jawab.
 
-- [ ] Menyiapkan Panoptic Indoor Segmentation v5 sebagai data latih.
-- [ ] Memilih minimal 3 model dari setidaknya 2 keluarga arsitektur.
-- [ ] Mengambil minimal 40 foto ruangan nyata dengan kamera HP sendiri.
-- [ ] Memastikan minimal 10 foto diambil dalam kondisi sulit.
-- [ ] Menganotasi foto sendiri di Roboflow dengan kelas yang sama dengan dataset.
-- [ ] Menyimpan screenshot proses anotasi dan EXIF/metadata foto.
-- [ ] Melatih model dan menyimpan log training asli.
-- [ ] Mengevaluasi setiap model pada test set asli dan test set buatan sendiri.
-- [ ] Menganalisis selisih performa atau domain shift.
-- [ ] Menentukan 3 kelas tersulit berdasarkan analisis awal dan mencatat buktinya.
-- [ ] Membandingkan hanya 3 kelas tersulit dengan semua kelas sesuai NRP 5054241018.
-- [ ] Memilih 5 foto kegagalan dari test set buatan sendiri.
-- [ ] Menjelaskan kegagalan setiap foto dengan mengaitkannya pada mekanisme model.
-- [ ] Menguji penjelasan kegagalan melalui eksperimen kecil dan mencatat hasilnya.
-- [ ] Menyertakan catatan waktu GPU dan logbook kendala serta keputusan.
-- [ ] Mendeklarasikan penggunaan AI dan melampirkan prompt utama.
-- [ ] Mendokumentasikan minimal satu kesalahan atau saran AI yang tidak cocok serta perbaikannya.
+Rincian status dan bukti ada di [laporan analisis](ANALISIS_CPMK3.md).
 
 ## 4. Peta sumber dalam PDF
 
@@ -224,24 +218,33 @@ Checklist berikut merangkum kewajiban tugas. Semua kotak masih kosong karena REA
 | 31 | Analisis kegagalan berbasis bukti. |
 | 32 | Bukti proses, penggunaan AI, dan durasi pengerjaan. |
 
-## 5. Notebook Colab L4
+## 5. Alur notebook Colab
 
-Gunakan [01_instance_segmentation_kaggle.ipynb](01_instance_segmentation_kaggle.ipynb) di Google Colab. Notebook ini berisi persiapan dataset, training tiga model, evaluasi COCO Mask AP, eksperimen NRP, dan evaluasi foto sendiri. Notebook yang telah dieksekusi disimpan di `results/` sebagai bukti proses.
+| Notebook | Runtime | Fungsi |
+| --- | --- | --- |
+| [01 · Training](01_instance_segmentation_kaggle.ipynb) | L4 GPU | Persiapan data, training `all_classes`, validation, dan checkpoint recovery. |
+| [04 · Evaluasi v2](04_evaluasi_foto_pribadi_colab_v2.ipynb) | GPU | Evaluasi tiga checkpoint pada test Roboflow dan COCO foto pribadi v2. |
+| [05 · Eksperimen NRP](05_eksperimen_hard3_colab.ipynb) | L4 GPU | Memilih tiga kelas dari validation dan membandingkan `hard3` dengan `all_classes`. |
+| [06 · Analisis v2](06_analisis_foto_pribadi_colab_v2.ipynb) | CPU | Menghitung selisih pada kelas bersama, menampilkan lima studi kasus, dan menguji threshold. |
+
+Notebook 04, 05, dan 06 memuat output run yang dilaporkan. Arsip run terdahulu tersimpan di `results/`.
 
 | Bukti run | Isi |
 | --- | --- |
 | [Kaggle `run01`](results/segmentasi-instance-indoor-evaluasi-cpmk-3.ipynb) dan [laporan](results/reports/) | Baseline awal. CSV memuat hasil validation dan original test untuk YOLO11n dan Mask R-CNN. |
 | [Colab `colab_quality01`, sesi pertama](results/colab/colab_quality01_session1.ipynb) | YOLO11s selesai training dan validation. Mask R-CNN tercatat selesai sampai epoch 13. |
 | [Colab `colab_quality01`, sesi kedua](results/colab/colab_quality01_session2.ipynb) | YOLO11s dilewati, resume Mask R-CNN gagal, dan RF-DETR Seg Small selesai training serta validation. |
+| [Mask R-CNN `colab_quality02`](results/colab/colab_quality02_maskrcnn.ipynb) | Training ulang yang selesai 30 epoch. Checkpoint ini dipakai Notebook 04 v2. |
+| [Evaluasi `eval_personal56`](results/colab/eval_personal56_v1.ipynb) | Evaluasi awal, termasuk prediksi test Roboflow yang dirujuk oleh Notebook 05. |
 
 `tests/` berisi uji regresi untuk memeriksa notebook utama. Folder `dataset/` dan `outputs/` dipakai untuk data dan hasil kerja lokal. Keduanya diabaikan Git. Output dari training Colab tersimpan di Drive.
 
-### 5.1. Menjalankan notebook
+### 5.1. Menjalankan training jika diperlukan
 
 1. Buka notebook di Colab, pilih **L4 GPU** pada pengaturan runtime, lalu jalankan cell. Hubungkan Google Drive saat diminta. Jenis GPU aktual dicatat dalam `environment_train.json`. [FAQ Google Colab](https://research.google.com/colaboratory/faq.html)
 2. Konfigurasi `RUNTIME = "colab"` membaca `RAW_DATASET` langsung dari `/content/drive/MyDrive/Computer_Vision_Tugas_CPMK3/dataset`. Setiap split `train`, `valid`, dan `test` harus berisi `_annotations.coco.json` dan gambar yang dirujuk. Cell 2.1 menampilkan path yang digunakan dan daftar file jika ada yang hilang. Notebook menyalin gambar tersebut ke disk Colab dan mempertahankan split 397/166/359 serta fingerprint baseline. Untuk menjalankan di laptop, gunakan `RUNTIME = "local"`.
 3. Set `SMOKE_TEST = True` untuk menjalankan satu epoch dengan subset dataset. Setelah pipeline lolos, kembalikan `SMOKE_TEST = False`. Konfigurasi siap training memakai `MODE = "train"`, `MODEL = "all"`, `TRAIN_PROFILE = "quality"`, `RUN_LABEL = "colab_quality01"`, dan `EPOCHS = 30`. Model berjalan satu per satu pada subprocess terpisah. Untuk satu model, pilih `yolo11`, `maskrcnn`, atau `rfdetr`.
-4. Default `FINAL_TEST = False` memberi hasil validation untuk pemilihan konfigurasi. Setelah checkpoint dipilih, jalankan mode `predict` dengan `FINAL_TEST = True` dan label evaluasi baru. Gunakan `MODE = "prepare"` untuk audit saja. Foto sendiri tetap disiapkan sebagai test set terpisah dengan `ENABLE_PERSONAL = False` selama anotasi dan bukti belum lengkap.
+4. Default `FINAL_TEST = False` memberi hasil validation untuk pemilihan konfigurasi. Gunakan `MODE = "prepare"` untuk audit saja. Setelah checkpoint tersedia, evaluasi akhir dilakukan melalui Notebook 04.
 
 ### 5.2. Profil training dan kriteria perbandingan
 
@@ -269,7 +272,7 @@ Pada sesi baru, jalankan kembali `MODEL = "all"` dengan label dan konfigurasi ya
 
 Jika resume Mask R-CNN sebelumnya gagal dengan `RNG state must be a torch.ByteTensor`, buka notebook versi perbaikan dan jalankan dengan label serta konfigurasi lama. Notebook memulihkan state RNG CUDA dari tensor CPU dan menerima signature lama untuk perubahan ini.
 
-### 5.4. Evaluasi RF-DETR lama, hard3, dan foto sendiri
+### 5.4. Memakai checkpoint RF-DETR dari run Kaggle
 
 Pada run Kaggle sebelumnya, YOLO dan Mask R-CNN selesai dievaluasi. RF-DETR mencapai 30 epoch dan menyimpan best checkpoint sebelum inferensi terhenti pada `KeyError: 74`. Adapter sekarang menyaring slot background sebelum menerapkan batas prediksi. Indeks foreground 73 tetap dipetakan ke ID kategori asli 74. [Source RF-DETR 1.12.1](https://github.com/roboflow/rf-detr/blob/1.12.1/src/rfdetr/_prediction/core.py)
 
@@ -286,8 +289,12 @@ ENABLE_PERSONAL = False
 
 Notebook membaca resolusi dan asal run dari konfigurasi checkpoint. Langkah yang sama berlaku untuk mengevaluasi checkpoint terpilih dari model lain. Untuk YOLO gunakan `best.pt` dan untuk Mask R-CNN gunakan `best.pth`.
 
-Sesudah hasil validation ketiga model tersedia, jalankan `MODE = "select_classes"`. Isi `HARD3_BASELINE_RUNS` dengan label run per model jika Drive memuat beberapa kandidat. Gunakan daftar kelas yang dihasilkan untuk training `SCENARIO = "hard3"` dan evaluasi pasangan all_classes dan hard3 pada tiga kelas yang identik. Tetapkan label evaluasi yang sama di kedua skenario agar tabel perbandingannya berpasangan.
+### 5.5. Menjalankan evaluasi dan analisis akhir
 
-Sebanyak 44 foto HP tersedia, dengan 11 foto diberi label visual sulit. Untuk mengaktifkan evaluasi foto sendiri, lengkapi anotasi COCO, `photo_metadata.csv` dengan nama file yang cocok dan bukti EXIF, serta `annotation_screenshots`. Isi `PERSONAL_DATASET` dan ubah `ENABLE_PERSONAL = True`. Setelah evaluasi, pilih lima contoh kegagalan untuk analisis dan eksperimen kecil.
+Root proyek di Drive adalah `MyDrive/Computer_Vision_Tugas_CPMK3/`. Foto disimpan di `foto-sendiri/foto-sendiri-final/` dan anotasi revisi di `annotation-results-v2/annotations.coco.json`. CSV `photo_metadata_56.csv` dapat disimpan bersama foto untuk laporan kondisi pengambilan.
 
-Jalankan `python -m unittest discover -s tests -v` dengan NumPy untuk pemeriksaan CPU. Kompatibilitas runtime L4 dan skor profil baru menunggu eksekusi di Colab.
+1. **Notebook 04 v2** membaca checkpoint `colab_quality01` untuk YOLO dan RF-DETR, serta `colab_quality02` untuk Mask R-CNN. Run `eval_personal56_v2` menulis prediksi ketiga model dan metrik kedua test set.
+2. **Notebook 05** memakai `per_class_valid.csv` dari training dan prediksi test Roboflow dari evaluasi `eval_personal56` versi awal. Jalankan hanya jika ingin mereproduksi training `hard3` dari awal atau melanjutkan run yang belum selesai.
+3. **Notebook 06 v2** memakai prediksi `eval_personal56_v2`, serta `analysis_config.json` dan `failure_case_notes.csv` dari laporan `analisis_personal56_v2` sebelumnya. Ini mempertahankan empat kasus lama dan mengganti kasus keempat. Run menghasilkan laporan `analisis_personal56_v2_kasus_revisi`.
+
+Tabel dan lima panel yang digunakan untuk pengumpulan tersedia di [laporan analisis](ANALISIS_CPMK3.md). Uji regresi Notebook 01 dapat dijalankan dengan `python -m unittest discover -s tests -v` setelah NumPy terpasang.
