@@ -33,9 +33,39 @@
 \newcolumntype{Y}{>{\raggedright\arraybackslash}X}
 \graphicspath{{evidence/}{evidence/figures/}}
 \newcommand{\code}[1]{\textnormal{\detokenize{#1}}}
-\newcommand{\repofile}[2]{\href{https://github.com/KuliahFarhan/Computer_Vision_Tugas-Evaluasi-CPMK-3-/blob/main/#1}{#2}}
-\newcommand{\buktiref}[1]{\hyperlink{bukti-#1}{[#1]}}
-\newcommand{\bukti}[2]{\par\noindent\hangindent=2.1em\hangafter=1\hypertarget{bukti-#1}{\makebox[2.1em][l]{[#1]}}#2\par}
+\newcommand{\buktisource}[3]{%
+  \expandafter\def\csname buktitautan-#1\endcsname##1{\href{#2}{##1}}%
+  \expandafter\def\csname buktijudul-#1\endcsname{#3}%
+}
+\newcommand{\buktiref}[1]{\csname buktitautan-#1\endcsname{[#1]}}
+\newcommand{\bukti}[1]{%
+  \par\noindent\hangindent=2.1em\hangafter=1\makebox[2.1em][l]{[#1]}%
+  \csname buktitautan-#1\endcsname{\csname buktijudul-#1\endcsname}\par
+}
+
+\buktisource{1}{https://universe.roboflow.com/panopticindoor/panoptic-indoor-segmentation}{Panoptic Indoor Segmentation v5}
+\buktisource{2}{https://drive.google.com/drive/folders/1hDHNcZQy2UywUaTo6yZb6MNJIsjYM0P5?usp=sharing}{Folder Drive berisi 56 foto uji mandiri}
+\buktisource{3}{https://drive.google.com/file/d/1VCekCWCassq1xIc3idabYUup1q9MZqMF/view}{Daftar kondisi foto}
+\buktisource{4}{https://github.com/KuliahFarhan/Computer_Vision_Tugas-Evaluasi-CPMK-3-/blob/main/evidence/bukti-anotasi-roboflow.png}{Screenshot proses anotasi di Roboflow}
+\buktisource{5}{https://github.com/cocodataset/cocoapi/blob/master/PythonAPI/pycocotools/cocoeval.py}{Kode evaluator COCO}
+\buktisource{6}{https://github.com/KuliahFarhan/Computer_Vision_Tugas-Evaluasi-CPMK-3-/blob/main/04_evaluasi_foto_pribadi_colab_v2.ipynb}{Notebook evaluasi kedua data uji}
+\buktisource{7}{https://github.com/KuliahFarhan/Computer_Vision_Tugas-Evaluasi-CPMK-3-/blob/main/06_analisis_foto_pribadi_colab_v2.ipynb}{Notebook domain shift dan studi kegagalan}
+\buktisource{8}{https://github.com/KuliahFarhan/Computer_Vision_Tugas-Evaluasi-CPMK-3-/tree/main/results/anotasi-foto-pribadi}{Arsip prediksi ketiga model pada foto uji}
+\buktisource{9}{https://github.com/KuliahFarhan/Computer_Vision_Tugas-Evaluasi-CPMK-3-/blob/main/05_eksperimen_hard3_colab.ipynb}{Notebook eksperimen tiga kelas tersulit}
+\buktisource{10}{https://github.com/KuliahFarhan/Computer_Vision_Tugas-Evaluasi-CPMK-3-/blob/main/LOGBOOK.md}{Logbook dan catatan hipotesis}
+\buktisource{11}{https://docs.ultralytics.com/reference/nn/modules/head/\#ultralytics.nn.modules.head.Segment}{Dokumentasi segmentation head YOLO}
+\buktisource{12}{https://openaccess.thecvf.com/content_iccv_2017/html/He_Mask_R-CNN_ICCV_2017_paper.html}{Makalah Mask R-CNN}
+\buktisource{13}{https://arxiv.org/abs/2511.09554}{Makalah RF-DETR}
+\buktisource{14}{https://drive.google.com/file/d/1fsc1fJzak0aYkRnkx691VL0ZNOwWWo1r/view?usp=drive_link}{CSV metadata EXIF 56 foto di Drive}
+\buktisource{15}{https://drive.google.com/file/d/1IAhz5Iw1eeHmef0u75kyz18VEOrBl2cC/view?usp=drive_link}{CSV log pelatihan YOLO}
+\buktisource{16}{https://drive.google.com/file/d/1gmMSFbj-uzc-Bri4D-50K2n5qNd_wkyU/view?usp=drive_link}{CSV log pelatihan Mask R-CNN}
+\buktisource{17}{https://drive.google.com/file/d/1BRpkx9Z3BTyCZO9CQ2NIeo-C_j4eSFZl/view?usp=drive_link}{Log TensorBoard RF-DETR}
+\buktisource{18}{https://github.com/KuliahFarhan/Computer_Vision_Tugas-Evaluasi-CPMK-3-/blob/main/results/colab/colab_quality01_session2.ipynb}{Notebook pelatihan RF-DETR}
+\buktisource{19}{https://github.com/KuliahFarhan/Computer_Vision_Tugas-Evaluasi-CPMK-3-}{Repositori proyek di GitHub}
+\buktisource{20}{https://github.com/KuliahFarhan/Computer_Vision_Tugas-Evaluasi-CPMK-3-/commits}{Riwayat commit proyek}
+\buktisource{21}{https://github.com/KuliahFarhan/Computer_Vision_Tugas-Evaluasi-CPMK-3-/blob/main/07_inferensi_foto_baru_colab.ipynb}{Notebook demo inferensi foto baru}
+\buktisource{22}{https://github.com/KuliahFarhan/Computer_Vision_Tugas-Evaluasi-CPMK-3-/blob/main/ANALISIS_CPMK3.md\#63-deklarasi-penggunaan-ai}{Prompt asli dan deklarasi penggunaan AI}
+
 \newcommand{\reportfig}[3]{%
   \begin{minipage}{\linewidth}\centering
     \includegraphics[width=#1]{#2}\par
@@ -289,28 +319,28 @@ AI digunakan untuk membantu menyiapkan notebook, memeriksa kode dan label, serta
 \small
 \setlength{\parskip}{2pt}
 \begin{multicols}{2}
-\bukti{1}{\href{https://universe.roboflow.com/panopticindoor/panoptic-indoor-segmentation}{Panoptic Indoor Segmentation v5}}
-\bukti{2}{\href{https://drive.google.com/drive/folders/1hDHNcZQy2UywUaTo6yZb6MNJIsjYM0P5?usp=sharing}{Folder Drive berisi 56 foto uji mandiri}}
-\bukti{3}{\href{https://drive.google.com/file/d/1VCekCWCassq1xIc3idabYUup1q9MZqMF/view}{Daftar kondisi foto}}
-\bukti{4}{\repofile{evidence/bukti-anotasi-roboflow.png}{Screenshot proses anotasi di Roboflow}}
-\bukti{5}{\href{https://github.com/cocodataset/cocoapi/blob/master/PythonAPI/pycocotools/cocoeval.py}{Kode evaluator COCO}}
-\bukti{6}{\repofile{04_evaluasi_foto_pribadi_colab_v2.ipynb}{Notebook evaluasi kedua data uji}}
-\bukti{7}{\repofile{06_analisis_foto_pribadi_colab_v2.ipynb}{Notebook domain shift dan studi kegagalan}}
-\bukti{8}{\href{https://github.com/KuliahFarhan/Computer_Vision_Tugas-Evaluasi-CPMK-3-/tree/main/results/anotasi-foto-pribadi}{Arsip prediksi ketiga model pada foto uji}}
-\bukti{9}{\repofile{05_eksperimen_hard3_colab.ipynb}{Notebook eksperimen tiga kelas tersulit}}
-\bukti{10}{\repofile{LOGBOOK.md}{Logbook dan catatan hipotesis}}
-\bukti{11}{\href{https://docs.ultralytics.com/reference/nn/modules/head/\#ultralytics.nn.modules.head.Segment}{Dokumentasi segmentation head YOLO}}
-\bukti{12}{\href{https://openaccess.thecvf.com/content_iccv_2017/html/He_Mask_R-CNN_ICCV_2017_paper.html}{Makalah Mask R-CNN}}
-\bukti{13}{\href{https://arxiv.org/abs/2511.09554}{Makalah RF-DETR}}
-\bukti{14}{\href{https://drive.google.com/file/d/1fsc1fJzak0aYkRnkx691VL0ZNOwWWo1r/view?usp=drive_link}{CSV metadata EXIF 56 foto di Drive}}
-\bukti{15}{\href{https://drive.google.com/file/d/1IAhz5Iw1eeHmef0u75kyz18VEOrBl2cC/view?usp=drive_link}{CSV log pelatihan YOLO}}
-\bukti{16}{\href{https://drive.google.com/file/d/1gmMSFbj-uzc-Bri4D-50K2n5qNd_wkyU/view?usp=drive_link}{CSV log pelatihan Mask R-CNN}}
-\bukti{17}{\href{https://drive.google.com/file/d/1BRpkx9Z3BTyCZO9CQ2NIeo-C_j4eSFZl/view?usp=drive_link}{Log TensorBoard RF-DETR}}
-\bukti{18}{\repofile{results/colab/colab_quality01_session2.ipynb}{Notebook pelatihan RF-DETR}}
-\bukti{19}{\href{https://github.com/KuliahFarhan/Computer_Vision_Tugas-Evaluasi-CPMK-3-}{Repositori proyek di GitHub}}
-\bukti{20}{\href{https://github.com/KuliahFarhan/Computer_Vision_Tugas-Evaluasi-CPMK-3-/commits}{Riwayat commit proyek}}
-\bukti{21}{\repofile{07_inferensi_foto_baru_colab.ipynb}{Notebook demo inferensi foto baru}}
-\bukti{22}{\repofile{ANALISIS_CPMK3.md\#63-deklarasi-penggunaan-ai}{Prompt asli dan deklarasi penggunaan AI}}
+\bukti{1}
+\bukti{2}
+\bukti{3}
+\bukti{4}
+\bukti{5}
+\bukti{6}
+\bukti{7}
+\bukti{8}
+\bukti{9}
+\bukti{10}
+\bukti{11}
+\bukti{12}
+\bukti{13}
+\bukti{14}
+\bukti{15}
+\bukti{16}
+\bukti{17}
+\bukti{18}
+\bukti{19}
+\bukti{20}
+\bukti{21}
+\bukti{22}
 \end{multicols}
 \endgroup
 
